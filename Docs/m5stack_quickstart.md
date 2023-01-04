@@ -34,7 +34,7 @@ https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32
 
 <p align="center">
   <img
-    src="./images/1_esp32_installed.PNG"
-    width="284" height="108" border="0" alt="Tile38">
+    src="../images/1_esp32_installed.PNG"
+    width="284" height="108" border="0" alt="esp32_installed">
 </p>
 

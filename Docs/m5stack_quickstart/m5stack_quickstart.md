@@ -1,6 +1,6 @@
 # M5Stask Quickstart
 
-To start working with M5Stack board you should follow these steps:\
+To start working with M5Stack board you should follow these steps:
 
 1- [Prepare a m5stack board :D](#prepare-a-m5stack-board)
 
@@ -34,7 +34,7 @@ https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32
 
 <p align="center">
   <img
-    src="../images/m5stack_installation/1_esp32_installed.PNG"
+    src="../../images/m5stack_installation/1_esp32_installed.PNG"
     width="600" border="0" alt="esp32_installed">
 </p>
 
@@ -46,6 +46,6 @@ Now you can install M5Stack and other suggested libraries.
 
 <p align="center">
   <img
-    src="../images/m5stack_installation/2_install_m5stack_library.PNG"
+    src="../../images/m5stack_installation/2_install_m5stack_library.PNG"
     width="600" border="0" alt="esp32_installed">
 </p>

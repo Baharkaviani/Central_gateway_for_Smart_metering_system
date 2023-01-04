@@ -19,14 +19,14 @@ The main site for buying the m5stack board is its official site: https://m5stack
 
 ## Install Arduino IDE
 
-Download and install the [parduino-1.8.19-windows](https://downloads.arduino.cc/arduino-1.8.19-windows.exe) version of arduino IDE. 
+Download and install the [arduino-1.8.19-windows](https://downloads.arduino.cc/arduino-1.8.19-windows.exe) version of arduino IDE. 
 At the time I'm writing this documentation, arduino-2 was not a stable option to work with m5stack. 
 But you can test new versions.
 
 ## Install the Arduino-ESP32 Support
 
 Based on [this link](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html)
-add this package to the "File > Preferences > Additional Board Manager URLs":
+add this package to the `File > Preferences > Additional Board Manager URLs`:
 
 ```
 https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
@@ -38,10 +38,15 @@ https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32
     width="600" border="0" alt="esp32_installed">
 </p>
 
+Note: For more information about ESP32 boards you can see these links:
+
+  - [espressif documentation](https://docs.espressif.com/projects/arduino-esp32/en/latest/getting_started.html)
+  - [arduino-esp32 github](https://github.com/espressif/arduino-esp32)
+
 ## Install M5Stack Library
 
 Install the M5Stack library so you can work with the board. 
-To install go to "Sketch > Include Library > Manage Libraries..." and search `m5stack`.
+To install go to `Sketch > Include Library > Manage Libraries...` and search `m5stack`.
 Now you can install M5Stack and other suggested libraries.
 
 <p align="center">

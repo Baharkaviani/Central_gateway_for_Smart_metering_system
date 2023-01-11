@@ -35,13 +35,18 @@ https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32
 <p align="center">
   <img
     src="../../images/m5stack_installation/1_esp32_installed.PNG"
-    width="600" border="0" alt="esp32_installed">
+    width="600" border="0" alt="esp32 installed">
 </p>
 
 Note: For more information about ESP32 boards you can see these links:
 
-  - [espressif documentation](https://docs.espressif.com/projects/arduino-esp32/en/latest/getting_started.html)
-  - [arduino-esp32 github](https://github.com/espressif/arduino-esp32)
+* Arduino-ESP32 Official Documentation: [espressif documentation](https://docs.espressif.com/projects/arduino-esp32/en/latest/getting_started.html) 
+* Arduino-ESP32 Official Repository: [espressif/arduino-esp32](https://github.com/espressif/arduino-esp32)
+* ESP32 Datasheet: [Link to datasheet](https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf)
+* ESP32-S2 Datasheet: [Link to datasheet](https://www.espressif.com/sites/default/files/documentation/esp32-s2_datasheet_en.pdf)
+* ESP32-C3 Datasheet: [Link to datasheet](https://www.espressif.com/sites/default/files/documentation/esp32-c3_datasheet_en.pdf)
+* Official ESP-IDF documentation: [ESP-IDF](https://idf.espressif.com)
+
 
 ## Install M5Stack Library
 
@@ -52,5 +57,5 @@ Now you can install M5Stack and other suggested libraries.
 <p align="center">
   <img
     src="../../images/m5stack_installation/2_install_m5stack_library.PNG"
-    width="600" border="0" alt="esp32_installed">
+    width="600" border="0" alt="Install m5stack library">
 </p>

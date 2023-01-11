@@ -1,73 +1,40 @@
 # WiFiScan Example
-
-This example demonstrates how to use the WiFi library to scan available WiFi networks and print the results.
-
-# Supported Targets
-
-Currently this example supports the following targets.
-
-| Supported Targets | ESP32 | ESP32-S2 | ESP32-C3 |
-| ----------------- | ----- | -------- | -------- |
-
 ## How to Use Example
-
-* How to install the Arduino IDE: [Install Arduino IDE](https://github.com/espressif/arduino-esp32/tree/master/docs/arduino-ide).
-
 #### Using Arduino IDE
 
 * Before Compile/Verify, select the correct board: `Tools -> Board`.
 * Select the COM port: `Tools -> Port: xxx` where the `xxx` is the detected COM port.
 
-#### Using Platform IO
+#### Using VScode
 
-* Select the COM port: `Devices` or setting the `upload_port` option on the `platformio.ini` file.
+* Make Sure that all configurations are correct and you have selected the correct file to upload.
+* Upload the code with the upload button on the top + right side of the IDE. Or simply press `Ctrl + Alt + U`.
+* The code starts to upload:
+<p align="center">
+  <img
+    src="../../../../images/3_scan_wifi_networks/1_upload_code_to_board.PNG"
+    width="600" border="0" alt="OUTPUT section in VScode">
+</p>
 
 ## Example/Log Output
 
 ```
-ets Jul 29 2019 12:21:46
-
-rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
-configsip: 0, SPIWP:0xee
-clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
-mode:DIO, clock div:1
-load:0x3fff0030,len:1412
-load:0x40078000,len:13400
-load:0x40080400,len:3672
-entry 0x400805f8
-Setup done
-scan start
 scan done
-17 networks found
-1: IoTNetwork (-62)*
-2: WiFiSSID (-62)*
-3: B3A7992 (-63)*
-4: WiFi (-63) 
-5: IoTNetwork2 (-64)*
+22 networks found
+1: HUAWEI P10 lite (-42)*
+2: Shenasa (-63)*
+3: Trigup (-63)*
+4: Shenasa (-65)*
+5: Trigup (-65)*
+6: Shenasa (-69)*
+7: Trigup (-69)*
+8: Trigup (-74)*
+9: Irancell-TF-i60-2700_1 (-75)*
 ...
 ```
 
-## Troubleshooting
-
-***Important: Be sure you're using a good quality USB cable and you have enought power source for your project.***
-
-* **Programming Fail:** If the programming/flash procedure fails, try to reduce the serial connection speed.
-* **COM port not detected:** Check the USB cable connection and the USB to Serial driver installation.
-
-If the error persist, you can ask help at the official [ESP32 forum](https://esp32.com) or see [Contribute](#contribute).
-
-## Contribute
-
-To know how to contribute to this project, see [How to contribute.](https://github.com/espressif/arduino-esp32/blob/master/CONTRIBUTING.rst)
-
-If you have any **feedback** or **issue** to report on this example/library, please open an issue or fix it by creating a new PR. Contributions are more than welcome!
-
-Before creating a new issue, be sure to try the Troubleshooting and to check if the same issue was already created by someone else.
-
-## Resources
-
-* Arduino-ESP32 Official Repository: [espressif/arduino-esp32](https://github.com/espressif/arduino-esp32)
-* ESP32 Datasheet: [Link to datasheet](https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_en.pdf)
-* ESP32-S2 Datasheet: [Link to datasheet](https://www.espressif.com/sites/default/files/documentation/esp32-s2_datasheet_en.pdf)
-* ESP32-C3 Datasheet: [Link to datasheet](https://www.espressif.com/sites/default/files/documentation/esp32-c3_datasheet_en.pdf)
-* Official ESP-IDF documentation: [ESP-IDF](https://idf.espressif.com)
+<p align="center">
+  <img
+    src="../../../../images/3_scan_wifi_networks/2_result.PNG"
+    width="1500" border="0" alt="Output of wifi scan">
+</p>

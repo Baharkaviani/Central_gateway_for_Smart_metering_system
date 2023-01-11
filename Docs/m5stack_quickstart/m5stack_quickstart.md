@@ -34,7 +34,7 @@ https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32
 
 <p align="center">
   <img
-    src="../../images/m5stack_installation/1_esp32_installed.PNG"
+    src="../../images/Docs/m5stack_installation/1_esp32_installed.PNG"
     width="600" border="0" alt="esp32 installed">
 </p>
 
@@ -56,6 +56,6 @@ Now you can install M5Stack and other suggested libraries.
 
 <p align="center">
   <img
-    src="../../images/m5stack_installation/2_install_m5stack_library.PNG"
+    src="../../images/Docs/m5stack_installation/2_install_m5stack_library.PNG"
     width="600" border="0" alt="Install m5stack library">
 </p>

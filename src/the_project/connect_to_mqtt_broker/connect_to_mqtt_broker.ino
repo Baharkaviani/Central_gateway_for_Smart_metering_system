@@ -18,6 +18,10 @@ const char* password = "*******";
 // MQTT Broker
 const char *mqtt_broker = "test.mosquitto.org";
 const char *topic = "AUTSmartMeteringSystem/esp32/test";
+// 2: gas / water / power / battery
+// 3: consumption / remainingPercentage
+// const char *mqtt_username = "emqx";
+// const char *mqtt_password = "public";
 const int mqtt_port = 1883;
 
 WiFiClient espClient;
@@ -40,6 +44,7 @@ void setup() {
         String client_id = "aut_esp32-client-";
         client_id += String(WiFi.macAddress());
         Serial.printf("The client %s connects to the public mqtt broker\n", client_id.c_str());
+        // if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
         if (client.connect(client_id.c_str())) {
             Serial.println("Public emqx mqtt broker connected");
         }

@@ -4,7 +4,7 @@
 * Describe:
     This sketch demonstrates how to connect to a mqtt broker.
     Before connecting to broker you have to test wifi connection.
-    Conplete details at https://www.emqx.com/en/blog/esp32-connects-to-the-free-public-mqtt-broker
+    Complete details at https://www.emqx.com/en/blog/esp32-connects-to-the-free-public-mqtt-broker
 * Date: 2023/02/14
 *******************************************************************************
 */
@@ -38,7 +38,7 @@ void setup() {
     client.setServer(mqtt_broker, mqtt_port);
     client.setCallback(callback);
     while (!client.connected()) {
-        String client_id = "esp32-client-";
+        String client_id = "aut-esp32-client-";
         client_id += String(WiFi.macAddress());
         Serial.printf("The client %s connects to the public mqtt broker\n", client_id.c_str());
         if (client.connect(client_id.c_str())) {

@@ -17,9 +17,11 @@ const char* password = "*******";
 
 // MQTT Broker
 const char *mqtt_broker = "test.mosquitto.org";
-const char *topic = "AUTSmartMeteringSystem/esp32/test";
-// 2: gas / water / power / battery
-// 3: consumption / remainingPercentage
+const char *gas_topic = "AUTSmartMeteringSystem/gas/ID1/consumption";
+const char *water_topic = "AUTSmartMeteringSystem/water/ID1/consumption";
+const char *power_topic = "AUTSmartMeteringSystem/power/ID1/consumption";
+const char *battery_topic = "AUTSmartMeteringSystem/battery/ID1/remainingPercentage";
+
 // const char *mqtt_username = "emqx";
 // const char *mqtt_password = "public";
 const int mqtt_port = 1883;
@@ -55,8 +57,14 @@ void setup() {
         }
     }
     // publish and subscribe
-    client.publish(topic, "Hi EMQX I'm ESP32 ^^");
-    client.subscribe(topic);
+    client.publish(gas_topic, "gas gas gas");
+    client.subscribe(gas_topic);
+    client.publish(water_topic, "water water water");
+    client.subscribe(water_topic);
+    client.publish(power_topic, "power power power");
+    client.subscribe(power_topic);
+    client.publish(battery_topic, "battery battery battery");
+    client.subscribe(battery_topic);
 }
 
 void callback(char *topic, byte *payload, unsigned int length) {

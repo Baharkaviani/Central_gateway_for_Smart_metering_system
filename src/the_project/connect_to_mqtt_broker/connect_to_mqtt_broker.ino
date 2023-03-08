@@ -18,7 +18,7 @@ const char* password = "*******";
 
 // MQTT Broker
 const char *mqtt_broker = "test.mosquitto.org";
-const int mqtt_port = 1883;
+const int mqtt_port = 1884;
 
 // MQTT Topics
 const char *gas_topic = "AUTSmartMeteringSystem/gas/ID1/consumption";
@@ -27,8 +27,8 @@ const char *power_topic = "AUTSmartMeteringSystem/power/ID1/consumption";
 const char *battery_topic = "AUTSmartMeteringSystem/battery/ID1/remainingPercentage";
 
 // MQTT Authentication
-// const char *mqtt_username = "emqx";
-// const char *mqtt_password = "public";
+const char *mqtt_username = "rw";
+const char *mqtt_password = "readwrite";
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -100,8 +100,8 @@ void reconnect() {
         client_id += String(WiFi.macAddress());
         Serial.printf("The client %s connects to the public mqtt broker\n", client_id.c_str());
 
-        // if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
-        if (client.connect(client_id.c_str())) {
+        if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
+        // if (client.connect(client_id.c_str())) {
             Serial.println("Public emqx mqtt broker connected");
         } else {
             Serial.print("failed with state ");

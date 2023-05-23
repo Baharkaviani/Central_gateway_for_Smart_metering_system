@@ -12,9 +12,11 @@
 #include <PubSubClient.h>
 #include <string.h>
 
-// Replace with your network credentials
-const char* ssid = "*******";
-const char* password = "*******";
+// WiFi (Replace with your network credentials)
+const char *ssid = "*******";  // Enter your WiFi name
+const char *password = "*******"; // Enter WiFi password
+WiFiClient espClient;
+PubSubClient client(espClient);
 
 // MQTT Broker
 const char *mqtt_broker = "test.mosquitto.org";
@@ -31,10 +33,18 @@ const char *command_topic = "AUTSmartMeteringSystem/command/ID1/commandText";
 const char *mqtt_username = "rw";
 const char *mqtt_password = "readwrite";
 
-WiFiClient espClient;
-PubSubClient client(espClient);
-long lastMsg = 0;
-long updatingDataPeriod = 10000;
+// Required parameters to specify the data sending period
+unsigned long lastGasMsgTime = 0;
+unsigned long lastWaterMsgTime = 0;
+unsigned long lastPowerMsgTime = 0;
+unsigned long lastBatteryMsgTime = 0;
+
+unsigned long elapsedTimeInSeconds = 0;
+
+unsigned long updatingGasDataPeriod = 5000; // = 5 second
+unsigned long updatingWaterDataPeriod = 10000; // = 10 second
+unsigned long updatingPowerDataPeriod = 5000; // = 5 second
+unsigned long updatingBatteryDataPeriod = 7000; // = 7 second
 
 void setup() {
     // Set software serial baud to 115200;
@@ -72,14 +82,29 @@ void loop() {
     }
     client.loop();
 
-    long now = millis();
-    if (now - lastMsg > updatingDataPeriod) {
-        lastMsg = now;
+    elapsedTimeInSeconds = millis();
 
-        send_gas_consumption(0);
-        send_water_consumption(1);
-        send_power_consumption(2);
-        send_battery_remaining(3);
+    // gas
+    if (elapsedTimeInSeconds - lastGasMsgTime > updatingGasDataPeriod) {
+        lastGasMsgTime = elapsedTimeInSeconds;
+        send_gas_consumption(elapsedTimeInSeconds);
+    }
+
+    // water
+    if (elapsedTimeInSeconds - lastWaterMsgTime > updatingWaterDataPeriod) {
+        lastWaterMsgTime = elapsedTimeInSeconds;
+        send_water_consumption(elapsedTimeInSeconds);
+    }
+
+    // power
+    if (elapsedTimeInSeconds - lastPowerMsgTime > updatingPowerDataPeriod) {
+        lastPowerMsgTime = elapsedTimeInSeconds;
+        send_power_consumption(elapsedTimeInSeconds);
+    }
+
+    if (elapsedTimeInSeconds - lastBatteryMsgTime > updatingBatteryDataPeriod) {
+        lastBatteryMsgTime = elapsedTimeInSeconds;
+        send_battery_remaining(elapsedTimeInSeconds);
     }
 }
 
@@ -121,8 +146,11 @@ void send_gas_consumption(double gas_n) {
 
     // Convert the gas consumption value to a char array
     dtostrf(gas_n, 1, 2, gas_consumption);
+
     Serial.print("gas consumption: ");
-    Serial.println(gas_consumption);
+    Serial.print(gas_consumption);
+    Serial.print(", time:");
+    Serial.println(millis());
 
     // publish
     client.publish(gas_topic, gas_consumption);
@@ -133,8 +161,11 @@ void send_water_consumption(double water_n) {
 
     // Convert the water consumption value to a char array
     dtostrf(water_n, 1, 2, water_consumption);
+
     Serial.print("water consumption: ");
-    Serial.println(water_consumption);
+    Serial.print(water_consumption);
+    Serial.print(", time:");
+    Serial.println(millis());
 
     // publish
     client.publish(water_topic, water_consumption);
@@ -145,8 +176,11 @@ void send_power_consumption(double power_n) {
 
     // Convert the power consumption value to a char array
     dtostrf(power_n, 1, 2, power_consumption);
+
     Serial.print("power consumption: ");
-    Serial.println(power_consumption);
+    Serial.print(power_consumption);
+    Serial.print(", time:");
+    Serial.println(millis());
 
     // publish
     client.publish(power_topic, power_consumption);
@@ -157,8 +191,11 @@ void send_battery_remaining(double battery_n) {
 
     // Convert the battery remaining percentage value to a char array
     dtostrf(battery_n, 1, 2, battery_consumption);
+
     Serial.print("battery consumption: ");
-    Serial.println(battery_consumption);
+    Serial.print(battery_consumption);
+    Serial.print(", time:");
+    Serial.println(millis());
 
     // publish
     client.publish(battery_topic, battery_consumption);

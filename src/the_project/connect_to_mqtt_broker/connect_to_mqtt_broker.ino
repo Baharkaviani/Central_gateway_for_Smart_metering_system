@@ -22,9 +22,10 @@ const int mqtt_port = 1884;
 
 // MQTT Topics
 const char *gas_topic = "AUTSmartMeteringSystem/gas/ID1/consumption";
-const char *water_topic = "AUTSmartMeteringSystem/water/ID1/consumption";
+const char *water_topic = "AUTSmartMeteringSystem/water/ID1/consumption"; //AUTSmartMeteringSystem/Node1/WaterFlow1
 const char *power_topic = "AUTSmartMeteringSystem/power/ID1/consumption";
 const char *battery_topic = "AUTSmartMeteringSystem/battery/ID1/remainingPercentage";
+const char *command_topic = "AUTSmartMeteringSystem/command/ID1/commandText";
 
 // MQTT Authentication
 const char *mqtt_username = "rw";
@@ -53,14 +54,16 @@ void setup() {
     reconnect();
 
     // publish and subscribe
-    client.publish(gas_topic, "gas gas gas");
     client.subscribe(gas_topic);
-    client.publish(water_topic, "water water water");
+    client.publish(gas_topic, "Gas consumption will be sent through this topic.");
     client.subscribe(water_topic);
-    client.publish(power_topic, "power power power");
+    client.publish(water_topic, "Water consumption will be sent through this topic.");
     client.subscribe(power_topic);
-    client.publish(battery_topic, "battery battery battery");
+    client.publish(power_topic, "Power consumption will be sent through this topic.");
     client.subscribe(battery_topic);
+    client.publish(battery_topic, "Remaining battery percentage will be sent through this topic.");
+    client.subscribe(command_topic);
+    client.publish(command_topic, "Orders will be received through this topic.");
 }
 
 void loop() {
@@ -120,6 +123,8 @@ void send_gas_consumption(double gas_n) {
     dtostrf(gas_n, 1, 2, gas_consumption);
     Serial.print("gas consumption: ");
     Serial.println(gas_consumption);
+
+    // publish
     client.publish(gas_topic, gas_consumption);
 }
 
@@ -130,6 +135,8 @@ void send_water_consumption(double water_n) {
     dtostrf(water_n, 1, 2, water_consumption);
     Serial.print("water consumption: ");
     Serial.println(water_consumption);
+
+    // publish
     client.publish(water_topic, water_consumption);
 }
 
@@ -140,6 +147,8 @@ void send_power_consumption(double power_n) {
     dtostrf(power_n, 1, 2, power_consumption);
     Serial.print("power consumption: ");
     Serial.println(power_consumption);
+
+    // publish
     client.publish(power_topic, power_consumption);
 }
 
@@ -150,5 +159,11 @@ void send_battery_remaining(double battery_n) {
     dtostrf(battery_n, 1, 2, battery_consumption);
     Serial.print("battery consumption: ");
     Serial.println(battery_consumption);
+
+    // publish
     client.publish(battery_topic, battery_consumption);
+}
+
+void receive_command_text() {
+    // TODO
 }

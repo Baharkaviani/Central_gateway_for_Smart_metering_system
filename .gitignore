@@ -1,3 +1,7 @@
 .vscode/*
 datasheet/*
 Docs/m5stack/mqtt_explorer
+
+### ignore the Arduino output
+# ESP8266
+src/ESP8266Output

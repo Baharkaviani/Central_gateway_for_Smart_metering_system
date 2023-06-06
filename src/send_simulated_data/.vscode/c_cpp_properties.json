@@ -8,8 +8,8 @@
         {
             "name": "PlatformIO",
             "includePath": [
-                "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/the_project/send_simulated_data/send_simulated_data/include",
-                "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/the_project/send_simulated_data/send_simulated_data/src",
+                "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/send_simulated_data/include",
+                "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/send_simulated_data/src",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFi/src",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/tools/sdk/include",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/cores/esp8266",
@@ -57,8 +57,8 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/the_project/send_simulated_data/send_simulated_data/include",
-                    "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/the_project/send_simulated_data/send_simulated_data/src",
+                    "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/send_simulated_data/include",
+                    "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/send_simulated_data/src",
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFi/src",
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/tools/sdk/include",
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/cores/esp8266",

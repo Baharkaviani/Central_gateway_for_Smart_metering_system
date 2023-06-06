@@ -7,6 +7,6 @@
     - what next?
 
 - Example codes
-    - [Scan Networks](./src/example_codes/Useful_Wi-Fi_Library_Functions/scan_wifi_networks/README.md)
-    - [Connect To WiFi](./src/example_codes/Useful_Wi-Fi_Library_Functions/connect_to_wifi/README.md)
-    - [Connect to MQTT broker](./src/example_codes/mqtt_esp32/README.md)
+    - [Scan Networks](./example_codes/Useful_Wi-Fi_Library_Functions/scan_wifi_networks/README.md)
+    - [Connect To WiFi](./example_codes/Useful_Wi-Fi_Library_Functions/connect_to_wifi/README.md)
+    - [Connect to MQTT broker](./example_codes/mqtt_esp32/README.md)

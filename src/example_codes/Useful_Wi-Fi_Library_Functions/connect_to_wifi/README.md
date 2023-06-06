@@ -24,6 +24,6 @@ RRSI: -73
 
 <p align="center">
   <img
-    src="../../../../images/example_codes/connect_to_wifi/result.PNG"
+    src="./result.PNG"
     width="1500" border="0" alt="connected to the wifi">
 </p>

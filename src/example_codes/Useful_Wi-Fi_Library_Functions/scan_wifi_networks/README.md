@@ -12,7 +12,7 @@
 * The code starts to upload:
 <p align="center">
   <img
-    src="../../../../images/example_codes/scan_wifi_networks/1_upload_code_to_board.PNG"
+    src="./1_upload_code_to_board.PNG"
     width="600" border="0" alt="OUTPUT section in VScode">
 </p>
 
@@ -35,6 +35,6 @@ scan done
 
 <p align="center">
   <img
-    src="../../../../images/example_codes/scan_wifi_networks/2_result.PNG"
+    src="./2_result.PNG"
     width="1500" border="0" alt="Output of wifi scan">
 </p>

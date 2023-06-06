@@ -32,6 +32,6 @@ Public emqx mqtt broker connected
 
 <p align="center">
   <img
-    src="../../../images/example_codes/mqtt_esp32/1_mqtt_broker_connected.PNG"
+    src="./1_mqtt_broker_connected.PNG"
     width="1500" border="0" alt="mqtt broker connected">
 </p>

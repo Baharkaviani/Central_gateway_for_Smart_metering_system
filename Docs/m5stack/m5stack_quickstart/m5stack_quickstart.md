@@ -6,7 +6,7 @@ To start working with M5Stack board you should follow these steps:
 
 2- [Install Arduino IDE](#install-arduino-ide)
 
-3- [Install the Arduino-ESP32 Support](#install-the-arduino-ESP32-support)
+3- [Install the Arduino-ESP32 Support](#install-the-arduino-esp32-support)
 
 4- [Install M5Stack Library](#install-m5stack-library)
 
@@ -34,7 +34,7 @@ https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32
 
 <p align="center">
   <img
-    src="../../images/Docs/m5stack_installation/1_esp32_installed.PNG"
+    src="./1_esp32_installed.PNG"
     width="600" border="0" alt="esp32 installed">
 </p>
 
@@ -56,6 +56,6 @@ Now you can install M5Stack and other suggested libraries.
 
 <p align="center">
   <img
-    src="../../images/Docs/m5stack_installation/2_install_m5stack_library.PNG"
+    src="./2_install_m5stack_library.PNG"
     width="600" border="0" alt="Install m5stack library">
 </p>

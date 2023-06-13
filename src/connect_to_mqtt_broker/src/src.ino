@@ -35,16 +35,23 @@ const char *mqtt_password = "readwrite";
 
 // Required parameters to specify the data sending period
 unsigned long lastGasMsgTime = 0;
-unsigned long lastWaterMsgTime = 0;
-unsigned long lastPowerMsgTime = 0;
-unsigned long lastBatteryMsgTime = 0;
+unsigned long lastWaterMsgTime = 5000;
+unsigned long lastPowerMsgTime = 4000;
+unsigned long lastBatteryMsgTime = 6000;
 
 unsigned long elapsedTimeInSeconds = 0;
 
-unsigned long updatingGasDataPeriod = 5000; // = 5 second
+unsigned long updatingGasDataPeriod = 10000; // = 10 second
 unsigned long updatingWaterDataPeriod = 10000; // = 10 second
-unsigned long updatingPowerDataPeriod = 5000; // = 5 second
-unsigned long updatingBatteryDataPeriod = 7000; // = 7 second
+unsigned long updatingPowerDataPeriod = 10000; // = 10 second
+unsigned long updatingBatteryDataPeriod = 10000; // = 10 second
+
+// Measured data to send
+char gas_consumption[10][50];
+char water_consumption[10];
+char power_consumption[10];
+char battery_consumption[10];
+bool gas_subscribe[10] = {true};
 
 void setup() {
     // Set software serial baud to 115200;
@@ -96,16 +103,17 @@ void loop() {
         send_water_consumption(elapsedTimeInSeconds);
     }
 
-    // power
-    if (elapsedTimeInSeconds - lastPowerMsgTime > updatingPowerDataPeriod) {
-        lastPowerMsgTime = elapsedTimeInSeconds;
-        send_power_consumption(elapsedTimeInSeconds);
-    }
+    // // power
+    // if (elapsedTimeInSeconds - lastPowerMsgTime > updatingPowerDataPeriod) {
+    //     lastPowerMsgTime = elapsedTimeInSeconds;
+    //     send_power_consumption(elapsedTimeInSeconds);
+    // }
 
-    if (elapsedTimeInSeconds - lastBatteryMsgTime > updatingBatteryDataPeriod) {
-        lastBatteryMsgTime = elapsedTimeInSeconds;
-        send_battery_remaining(elapsedTimeInSeconds);
-    }
+    // // battery
+    // if (elapsedTimeInSeconds - lastBatteryMsgTime > updatingBatteryDataPeriod) {
+    //     lastBatteryMsgTime = elapsedTimeInSeconds;
+    //     send_battery_remaining(elapsedTimeInSeconds);
+    // }
 }
 
 void callback(char *topic, byte *payload, unsigned int length) {
@@ -142,23 +150,71 @@ void reconnect() {
 }
 
 void send_gas_consumption(double gas_n) {
-    char gas_consumption[10];
+    // find the index that the new data must be store in
+    int unsendDataIndex = 0;
+    for (int i = 0; i < 10; i++) {
+        if (gas_subscribe[i]) {
+            unsendDataIndex = i;
+            break;
+        }
+    }
 
     // Convert the gas consumption value to a char array
-    dtostrf(gas_n, 1, 2, gas_consumption);
+    dtostrf(gas_n, 1, 2, gas_consumption[unsendDataIndex]);
 
-    Serial.print("gas consumption: ");
-    Serial.print(gas_consumption);
-    Serial.print(", time:");
+    // print all gas_consumption datas
+    for (int i = 0; i < 10; i++) {
+        for (int j = 0; j < 50; j++) {
+            if (gas_consumption[i][j] == '\0') {
+                Serial.println();
+                break;
+            }
+            else {
+                Serial.print(gas_consumption[i][j]);
+            }
+        }
+    }
+    
+    // Create JSON object as a string
+    String json_str = "{\"gas_consumption\": [";
+    for (int i = 0; i <= unsendDataIndex; i++) {
+        json_str += "[";
+        for (int j = 0; j < 50; j++) {
+            if (gas_consumption[i][j] != '\0') {
+                json_str += gas_consumption[i][j];
+            }
+            else {
+                break;
+            }
+            // json_str += ",";
+        }
+        json_str += "]";
+        if (i != unsendDataIndex) {
+            json_str += ",";
+        }
+        gas_subscribe[i] = true;
+    }
+    json_str += "]}";
+
+    Serial.println(json_str);
+    Serial.print("time:");
     Serial.println(millis());
 
+    // Call getBytes() on that string to get the byte array to use as your payload in the message
+    char payload[json_str.length()];
+    int i;
+    for (i = 0; i < json_str.length(); i++) {
+        payload[i] = json_str[i];
+    }
+    payload[i] = '\0';
+    // json_str.getBytes(payload, json_str.length());
+
     // publish
-    client.publish(gas_topic, gas_consumption);
+    // gas_subscribe = client.subscribe(gas_topic);
+    client.publish(gas_topic, payload);
 }
 
 void send_water_consumption(double water_n) {
-    char water_consumption[10];
-
     // Convert the water consumption value to a char array
     dtostrf(water_n, 1, 2, water_consumption);
 
@@ -169,11 +225,10 @@ void send_water_consumption(double water_n) {
 
     // publish
     client.publish(water_topic, water_consumption);
+    Serial.println("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
 }
 
 void send_power_consumption(double power_n) {
-    char power_consumption[10];
-
     // Convert the power consumption value to a char array
     dtostrf(power_n, 1, 2, power_consumption);
 
@@ -184,11 +239,10 @@ void send_power_consumption(double power_n) {
 
     // publish
     client.publish(power_topic, power_consumption);
+    Serial.println("pppppppppppppppppppppppppppppppppppppppp");
 }
 
 void send_battery_remaining(double battery_n) {
-    char battery_consumption[10];
-
     // Convert the battery remaining percentage value to a char array
     dtostrf(battery_n, 1, 2, battery_consumption);
 
@@ -199,6 +253,7 @@ void send_battery_remaining(double battery_n) {
 
     // publish
     client.publish(battery_topic, battery_consumption);
+    Serial.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
 }
 
 void receive_command_text() {

@@ -34,17 +34,17 @@ const char *mqtt_username = "rw";
 const char *mqtt_password = "readwrite";
 
 // Required parameters to specify the data sending period
-unsigned long lastGasMsgTime = 0;
-unsigned long lastWaterMsgTime = 5000;
-unsigned long lastPowerMsgTime = 4000;
-unsigned long lastBatteryMsgTime = 6000;
+unsigned long last_gas_msg_time = 0;
+unsigned long last_water_msg_time = 5000;
+unsigned long last_power_msg_time = 4000;
+unsigned long last_battery_msg_time = 6000;
 
-unsigned long elapsedTimeInSeconds = 0;
+unsigned long elapsed_time_in_seconds = 0;
 
-unsigned long updatingGasDataPeriod = 10000; // = 10 second
-unsigned long updatingWaterDataPeriod = 10000; // = 10 second
-unsigned long updatingPowerDataPeriod = 10000; // = 10 second
-unsigned long updatingBatteryDataPeriod = 10000; // = 10 second
+unsigned long updating_gas_data_period = 10000; // = 10 second
+unsigned long updating_water_data_period = 10000; // = 10 second
+unsigned long updating_power_data_period = 10000; // = 10 second
+unsigned long updating_battery_data_period = 10000; // = 10 second
 
 // Measured data to send
 char gas_consumption[10][50];
@@ -89,30 +89,30 @@ void loop() {
     }
     client.loop();
 
-    elapsedTimeInSeconds = millis();
+    elapsed_time_in_seconds = millis();
 
     // gas
-    if (elapsedTimeInSeconds - lastGasMsgTime > updatingGasDataPeriod) {
-        lastGasMsgTime = elapsedTimeInSeconds;
-        send_gas_consumption(elapsedTimeInSeconds);
+    if (elapsed_time_in_seconds - last_gas_msg_time > updating_gas_data_period) {
+        last_gas_msg_time = elapsed_time_in_seconds;
+        send_gas_consumption(elapsed_time_in_seconds);
     }
 
     // water
-    if (elapsedTimeInSeconds - lastWaterMsgTime > updatingWaterDataPeriod) {
-        lastWaterMsgTime = elapsedTimeInSeconds;
-        send_water_consumption(elapsedTimeInSeconds);
+    if (elapsed_time_in_seconds - last_water_msg_time > updating_water_data_period) {
+        last_water_msg_time = elapsed_time_in_seconds;
+        send_water_consumption(elapsed_time_in_seconds);
     }
 
     // // power
-    // if (elapsedTimeInSeconds - lastPowerMsgTime > updatingPowerDataPeriod) {
-    //     lastPowerMsgTime = elapsedTimeInSeconds;
-    //     send_power_consumption(elapsedTimeInSeconds);
+    // if (elapsed_time_in_seconds - last_power_msg_time > updating_power_data_period) {
+    //     last_power_msg_time = elapsed_time_in_seconds;
+    //     send_power_consumption(elapsed_time_in_seconds);
     // }
 
     // // battery
-    // if (elapsedTimeInSeconds - lastBatteryMsgTime > updatingBatteryDataPeriod) {
-    //     lastBatteryMsgTime = elapsedTimeInSeconds;
-    //     send_battery_remaining(elapsedTimeInSeconds);
+    // if (elapsed_time_in_seconds - last_battery_msg_time > updating_battery_data_period) {
+    //     last_battery_msg_time = elapsed_time_in_seconds;
+    //     send_battery_remaining(elapsed_time_in_seconds);
     // }
 }
 

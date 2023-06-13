@@ -8,6 +8,7 @@
         {
             "name": "PlatformIO",
             "includePath": [
+                "C:\\Users\\bhrka\\Documents\\Arduino\\libraries\\PubSubClient\\src",
                 "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/connect_to_mqtt_broker/include",
                 "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/connect_to_mqtt_broker/src",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32/include/newlib/platform_include",

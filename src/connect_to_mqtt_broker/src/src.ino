@@ -36,22 +36,24 @@ const char *mqtt_password = "readwrite";
 // Required parameters to specify the data sending period
 unsigned long last_gas_msg_time = 0;
 unsigned long last_water_msg_time = 5000;
-unsigned long last_power_msg_time = 4000;
-unsigned long last_battery_msg_time = 6000;
+unsigned long last_power_msg_time = 10000;
+unsigned long last_battery_msg_time = 15000;
 
 unsigned long elapsed_time_in_seconds = 0;
 
-unsigned long updating_gas_data_period = 10000; // = 10 second
-unsigned long updating_water_data_period = 10000; // = 10 second
-unsigned long updating_power_data_period = 10000; // = 10 second
-unsigned long updating_battery_data_period = 10000; // = 10 second
+unsigned long updating_gas_data_period = 20000; // = 20 second
+unsigned long updating_water_data_period = 20000; // = 20 second
+unsigned long updating_power_data_period = 20000; // = 20 second
+unsigned long updating_battery_data_period = 20000; // = 20 second
 
 // Measured data to send
-char gas_consumption[10][50];
-char water_consumption[10];
-char power_consumption[10];
-char battery_consumption[10];
+#define BUFFER_SIZE 10
+char gas_consumption[BUFFER_SIZE][50];
+char water_consumption[BUFFER_SIZE][50];
+char power_consumption[BUFFER_SIZE];
+char battery_consumption[BUFFER_SIZE];
 int unsent_gas_index = 0;
+int unsent_water_index = 0;
 
 void setup() {
     // Set software serial baud to 115200;
@@ -190,13 +192,13 @@ void reconnectBroker() {
 
 void send_gas_consumption(double gas_n) {
     Serial.println("-----------------------send_gas_consumption-----------------------");
-    // Convert the gas consumption value to a char array
+    // convert the gas consumption value to a char array
     Serial.printf("unsent_gas_index = %d", unsent_gas_index);
     Serial.println();
     dtostrf(gas_n, 1, 2, gas_consumption[unsent_gas_index]);
 
     // print all gas_consumption datas
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < BUFFER_SIZE; i++) {
         for (int j = 0; j < 50; j++) {
             if (gas_consumption[i][j] == '\0') {
                 Serial.println();
@@ -208,10 +210,9 @@ void send_gas_consumption(double gas_n) {
         }
     }
     
-    // Create JSON object as a string
+    // create JSON object as a string
     String json_str = "{\"gas_consumption\": [";
     for (int i = 0; i <= unsent_gas_index; i++) {
-        json_str += "[";
         for (int j = 0; j < 50; j++) {
             if (gas_consumption[i][j] != '\0') {
                 json_str += gas_consumption[i][j];
@@ -220,7 +221,6 @@ void send_gas_consumption(double gas_n) {
                 break;
             }
         }
-        json_str += "]";
         if (i != unsent_gas_index) {
             json_str += ",";
         }
@@ -231,7 +231,7 @@ void send_gas_consumption(double gas_n) {
     Serial.print("time:");
     Serial.println(millis());
 
-    // Call getBytes() on that string to get the byte array to use as your payload in the message
+    // create char *payload
     char payload[json_str.length()];
     int i;
     for (i = 0; i < json_str.length(); i++) {
@@ -240,7 +240,6 @@ void send_gas_consumption(double gas_n) {
     payload[i] = '\0';
 
     // publish
-    // TODO: gas_subscribe = client.subscribe(gas_topic);
     bool is_sent = client.publish(gas_topic, payload);
     if (is_sent){
         unsent_gas_index = 0;
@@ -253,16 +252,61 @@ void send_gas_consumption(double gas_n) {
 
 void send_water_consumption(double water_n) {
     Serial.println("-----------------------send_water_consumption-----------------------");
-    // Convert the water consumption value to a char array
-    dtostrf(water_n, 1, 2, water_consumption);
+    // convert the water consumption value to a char array
+    Serial.printf("unsent_water_index = %d", unsent_water_index);
+    Serial.println();
+    dtostrf(water_n, 1, 2, water_consumption[unsent_water_index]);
 
-    Serial.print("water consumption: ");
-    Serial.print(water_consumption);
-    Serial.print(", time:");
+    // print all water_consumption datas
+    for (int i = 0; i < BUFFER_SIZE; i++) {
+        for (int j = 0; j < 50; j++) {
+            if (water_consumption[i][j] == '\0') {
+                Serial.println();
+                break;
+            }
+            else{
+                Serial.print(water_consumption[i][j]);
+            }
+        }
+    }
+
+    // create JSON object as a string
+    String json_str = "{\"water_consumption\": [";
+    for (int i = 0; i <= unsent_water_index; i++) {
+        for (int j = 0; j < 50; j++) {
+            if (water_consumption[i][j] != '\0') {
+                json_str += water_consumption[i][j];
+            }
+            else {
+                break;
+            }
+        }
+        if (i != unsent_water_index) {
+            json_str += ",";
+        }
+    }
+    json_str += "]}";
+
+    Serial.println(json_str);
+    Serial.print("time:");
     Serial.println(millis());
+    
+    // create char *payload
+    char payload[json_str.length()];
+    int i;
+    for (i = 0; i < json_str.length(); i++) {
+        payload[i] = json_str[i];
+    }
+    payload[i] = '\0';
 
     // publish
-    client.publish(water_topic, water_consumption);
+    bool is_sent = client.publish(water_topic, payload);
+    if (is_sent){
+        unsent_water_index = 0;
+    }
+    else {
+        unsent_water_index++;
+    }
     Serial.println("--------------------------------------------------------------------");
 }
 

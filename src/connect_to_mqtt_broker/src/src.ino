@@ -13,8 +13,8 @@
 #include <string.h>
 
 // WiFi (Replace with your network credentials)
-const char *ssid = "kaviani";  // Enter your WiFi name
-const char *password = "hasti1318"; // Enter WiFi password
+const char *ssid = "Warning";  // Enter your WiFi name
+const char *password = "zilc8261"; // Enter WiFi password
 WiFiClient espClient;
 PubSubClient client(espClient);
 
@@ -58,17 +58,12 @@ void setup() {
     Serial.begin(115200);
 
     // connecting to a WiFi network
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.println("Connecting to WiFi...");
-    }
-    Serial.println("Connected to the WiFi network");
+    WiFiInit();
 
     // connecting to a mqtt broker
     client.setServer(mqtt_broker, mqtt_port);
     client.setCallback(callback);
-    reconnect();
+    reconnectBroker();
 
     // publish and subscribe
     client.subscribe(gas_topic);
@@ -85,7 +80,7 @@ void setup() {
 
 void loop() {
     if (!client.connected()) {
-        reconnect();
+        reconnectBroker();
     }
     client.loop();
 
@@ -116,6 +111,39 @@ void loop() {
     // }
 }
 
+void WiFiInit() {
+    // delete old config
+    WiFi.disconnect(true);
+
+    delay(1000);
+
+    // handle different Wi-Fi events
+    WiFi.onEvent(WiFiStationConnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED);
+    WiFi.onEvent(WiFiGotIP, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
+    WiFi.onEvent(WiFiStationDisconnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
+
+    WiFi.begin(ssid, password);
+    Serial.println("Connecting to WiFi...");
+}
+
+void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info){
+    Serial.println("Connected to AP successfully!");
+}
+
+void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info){
+    Serial.println("WiFi connected.");
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
+}
+
+void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info){
+    Serial.println("Disconnected from WiFi access point.");
+    Serial.print("WiFi lost connection. Reason: ");
+    Serial.println(info.wifi_sta_disconnected.reason);
+    Serial.println("Trying to Reconnect...");
+    WiFi.begin(ssid, password);
+}
+
 void callback(char *topic, byte *payload, unsigned int length) {
     Serial.print("Message arrived in topic: ");
     Serial.println(topic);
@@ -127,8 +155,8 @@ void callback(char *topic, byte *payload, unsigned int length) {
     Serial.println("-----------------------");
 }
 
-void reconnect() {
-    // Loop until we're reconnected
+void reconnectBroker() {
+    // Loop until we're reconnected to mqtt broker
     while (!client.connected()) {
         Serial.print("Attempting MQTT connection...\n");
 

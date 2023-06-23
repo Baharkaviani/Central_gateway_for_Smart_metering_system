@@ -50,10 +50,12 @@ unsigned long updating_battery_data_period = 20000; // = 20 second
 #define BUFFER_SIZE 10
 char gas_consumption[BUFFER_SIZE][50];
 char water_consumption[BUFFER_SIZE][50];
-char power_consumption[BUFFER_SIZE];
-char battery_consumption[BUFFER_SIZE];
+char power_consumption[BUFFER_SIZE][50];
+char battery_consumption[BUFFER_SIZE][50];
 int unsent_gas_index = 0;
 int unsent_water_index = 0;
+int unsent_power_index = 0;
+int unsent_battery_index = 0;
 
 void setup() {
     // Set software serial baud to 115200;
@@ -100,17 +102,17 @@ void loop() {
         send_water_consumption(elapsed_time_in_seconds);
     }
 
-    // // power
-    // if (elapsed_time_in_seconds - last_power_msg_time > updating_power_data_period) {
-    //     last_power_msg_time = elapsed_time_in_seconds;
-    //     send_power_consumption(elapsed_time_in_seconds);
-    // }
+    // power
+    if (elapsed_time_in_seconds - last_power_msg_time > updating_power_data_period) {
+        last_power_msg_time = elapsed_time_in_seconds;
+        send_power_consumption(elapsed_time_in_seconds);
+    }
 
-    // // battery
-    // if (elapsed_time_in_seconds - last_battery_msg_time > updating_battery_data_period) {
-    //     last_battery_msg_time = elapsed_time_in_seconds;
-    //     send_battery_remaining(elapsed_time_in_seconds);
-    // }
+    // battery
+    if (elapsed_time_in_seconds - last_battery_msg_time > updating_battery_data_period) {
+        last_battery_msg_time = elapsed_time_in_seconds;
+        send_battery_remaining(elapsed_time_in_seconds);
+    }
 }
 
 void WiFiInit() {
@@ -312,31 +314,121 @@ void send_water_consumption(double water_n) {
 
 void send_power_consumption(double power_n) {
     Serial.println("-----------------------send_power_consumption-----------------------");
-    // Convert the power consumption value to a char array
-    dtostrf(power_n, 1, 2, power_consumption);
+    // convert the power consumption value to a char array
+    Serial.printf("unsent_power_index = %d", unsent_power_index);
+    Serial.println();
+    dtostrf(power_n, 1, 2, power_consumption[unsent_power_index]);
 
-    Serial.print("power consumption: ");
-    Serial.print(power_consumption);
-    Serial.print(", time:");
+    // print all power_consumption datas
+    for (int i = 0; i < BUFFER_SIZE; i++) {
+        for (int j = 0; j < 50; j++) {
+            if (power_consumption[i][j] == '\0') {
+                Serial.println();
+                break;
+            }
+            else {
+                Serial.print(power_consumption[i][j]);
+            }
+        }
+    }
+
+    // create JSON object as a string
+    String json_str = "{\"power_consumption\": [";
+    for (int i = 0; i <= unsent_power_index; i++) {
+        for (int j = 0; j < 50; j++) {
+            if (power_consumption[i][j] != '\0') {
+                json_str += power_consumption[i][j];
+            }
+            else {
+                break;
+            }
+        }
+        if (i != unsent_power_index) {
+            json_str += ",";
+        }
+    }
+    json_str += "]}";
+    
+    Serial.println(json_str);
+    Serial.print("time:");
     Serial.println(millis());
 
+    // create char *payload
+    char payload[json_str.length()];
+    int i;
+    for (int i = 0; i < json_str.length(); i++) {
+        payload[i] = json_str[i];
+    }
+    payload[i] = '\0';
+
     // publish
-    client.publish(power_topic, power_consumption);
+    bool is_sent = client.publish(power_topic, payload);
+    if (is_sent) {
+        unsent_power_index = 0;
+    }
+    else {
+        unsent_power_index++;
+    }
     Serial.println("--------------------------------------------------------------------");
 }
 
 void send_battery_remaining(double battery_n) {
     Serial.println("-----------------------send_battery_remaining-----------------------");
-    // Convert the battery remaining percentage value to a char array
-    dtostrf(battery_n, 1, 2, battery_consumption);
+    // convert the battery consumption value to a char array
+    Serial.printf("unsent_battery_index = %d", unsent_battery_index);
+    Serial.println();
+    dtostrf(battery_n, 1, 2, battery_consumption[unsent_battery_index]);
 
-    Serial.print("battery consumption: ");
-    Serial.print(battery_consumption);
-    Serial.print(", time:");
+    // print all battery_consumption datas
+    for (int i = 0; i < BUFFER_SIZE; i++) {
+        for (int j = 0; j < 50; j++) {
+            if (battery_consumption[i][j] == '\0') {
+                Serial.println();
+                break;
+            }
+            else {
+                Serial.print(battery_consumption[i][j]);
+            }
+        }
+    }
+
+    // create JSON object as a string
+    String json_str = "{\"battery_consumption\": [";
+    for (int i = 0; i <= unsent_battery_index; i++) {
+        for (int j = 0; j < 50; j++) {
+            if (battery_consumption[i][j] != '\0') {
+                json_str += battery_consumption[i][j];
+            }
+            else {
+                break;
+            }
+        }
+        if (i != unsent_battery_index) {
+            json_str += ",";
+        }
+    }
+    json_str += "]}";
+
+    Serial.println(json_str);
+    Serial.print("time:");
     Serial.println(millis());
 
+    // create char *payload
+    char payload[json_str.length()];
+    int i;
+    for (i = 0; i < json_str.length(); i++) {
+        payload[i] = json_str[i];
+    }
+    payload[i] = '\0';
+
     // publish
-    client.publish(battery_topic, battery_consumption);
+    bool is_sent = client.publish(battery_topic, payload);
+    if (is_sent){
+        unsent_battery_index = 0;
+    }
+    else {
+        unsent_battery_index++;
+    }
     Serial.println("--------------------------------------------------------------------");
 }
 

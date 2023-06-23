@@ -51,7 +51,7 @@ char gas_consumption[10][50];
 char water_consumption[10];
 char power_consumption[10];
 char battery_consumption[10];
-bool gas_subscribe[10] = {true};
+int unsent_gas_index = 0;
 
 void setup() {
     // Set software serial baud to 115200;
@@ -190,17 +190,10 @@ void reconnectBroker() {
 
 void send_gas_consumption(double gas_n) {
     Serial.println("-----------------------send_gas_consumption-----------------------");
-    // find the index that the new data must be store in
-    int unsendDataIndex = 0;
-    for (int i = 0; i < 10; i++) {
-        if (gas_subscribe[i]) {
-            unsendDataIndex = i;
-            break;
-        }
-    }
-
     // Convert the gas consumption value to a char array
-    dtostrf(gas_n, 1, 2, gas_consumption[unsendDataIndex]);
+    Serial.printf("unsent_gas_index = %d", unsent_gas_index);
+    Serial.println();
+    dtostrf(gas_n, 1, 2, gas_consumption[unsent_gas_index]);
 
     // print all gas_consumption datas
     for (int i = 0; i < 10; i++) {
@@ -217,7 +210,7 @@ void send_gas_consumption(double gas_n) {
     
     // Create JSON object as a string
     String json_str = "{\"gas_consumption\": [";
-    for (int i = 0; i <= unsendDataIndex; i++) {
+    for (int i = 0; i <= unsent_gas_index; i++) {
         json_str += "[";
         for (int j = 0; j < 50; j++) {
             if (gas_consumption[i][j] != '\0') {
@@ -226,13 +219,11 @@ void send_gas_consumption(double gas_n) {
             else {
                 break;
             }
-            // json_str += ",";
         }
         json_str += "]";
-        if (i != unsendDataIndex) {
+        if (i != unsent_gas_index) {
             json_str += ",";
         }
-        gas_subscribe[i] = true;
     }
     json_str += "]}";
 
@@ -247,11 +238,16 @@ void send_gas_consumption(double gas_n) {
         payload[i] = json_str[i];
     }
     payload[i] = '\0';
-    // json_str.getBytes(payload, json_str.length());
 
     // publish
-    // gas_subscribe = client.subscribe(gas_topic);
-    client.publish(gas_topic, payload);
+    // TODO: gas_subscribe = client.subscribe(gas_topic);
+    bool is_sent = client.publish(gas_topic, payload);
+    if (is_sent){
+        unsent_gas_index = 0;
+    }
+    else {
+        unsent_gas_index++;
+    }
     Serial.println("------------------------------------------------------------------");
 }
 

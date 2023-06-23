@@ -112,6 +112,7 @@ void loop() {
 }
 
 void WiFiInit() {
+    Serial.println("-----------------------WiFiInit-----------------------");
     // delete old config
     WiFi.disconnect(true);
 
@@ -124,27 +125,35 @@ void WiFiInit() {
 
     WiFi.begin(ssid, password);
     Serial.println("Connecting to WiFi...");
+    Serial.println("------------------------------------------------------");
 }
 
 void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info){
+    Serial.println("-----------------------WiFiStationConnected-----------------------");
     Serial.println("Connected to AP successfully!");
+    Serial.println("------------------------------------------------------------------");
 }
 
 void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info){
+    Serial.println("-----------------------WiFiGotIP-----------------------");
     Serial.println("WiFi connected.");
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
+    Serial.println("-------------------------------------------------------");
 }
 
 void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info){
+    Serial.println("-----------------------WiFiStationDisconnected-----------------------");
     Serial.println("Disconnected from WiFi access point.");
     Serial.print("WiFi lost connection. Reason: ");
     Serial.println(info.wifi_sta_disconnected.reason);
     Serial.println("Trying to Reconnect...");
     WiFi.begin(ssid, password);
+    Serial.println("---------------------------------------------------------------------");
 }
 
 void callback(char *topic, byte *payload, unsigned int length) {
+    Serial.println("-----------------------callback-----------------------");
     Serial.print("Message arrived in topic: ");
     Serial.println(topic);
     Serial.print("Message:");
@@ -152,10 +161,11 @@ void callback(char *topic, byte *payload, unsigned int length) {
         Serial.print((char)payload[i]);
     }
     Serial.println();
-    Serial.println("-----------------------");
+    Serial.println("------------------------------------------------------");
 }
 
 void reconnectBroker() {
+    Serial.println("-----------------------reconnectBroker-----------------------");
     // Loop until we're reconnected to mqtt broker
     while (!client.connected()) {
         Serial.print("Attempting MQTT connection...\n");
@@ -175,9 +185,11 @@ void reconnectBroker() {
             delay(2000);
         }
     }
+    Serial.println("-------------------------------------------------------------");
 }
 
 void send_gas_consumption(double gas_n) {
+    Serial.println("-----------------------send_gas_consumption-----------------------");
     // find the index that the new data must be store in
     int unsendDataIndex = 0;
     for (int i = 0; i < 10; i++) {
@@ -240,9 +252,11 @@ void send_gas_consumption(double gas_n) {
     // publish
     // gas_subscribe = client.subscribe(gas_topic);
     client.publish(gas_topic, payload);
+    Serial.println("------------------------------------------------------------------");
 }
 
 void send_water_consumption(double water_n) {
+    Serial.println("-----------------------send_water_consumption-----------------------");
     // Convert the water consumption value to a char array
     dtostrf(water_n, 1, 2, water_consumption);
 
@@ -253,10 +267,11 @@ void send_water_consumption(double water_n) {
 
     // publish
     client.publish(water_topic, water_consumption);
-    Serial.println("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww");
+    Serial.println("--------------------------------------------------------------------");
 }
 
 void send_power_consumption(double power_n) {
+    Serial.println("-----------------------send_power_consumption-----------------------");
     // Convert the power consumption value to a char array
     dtostrf(power_n, 1, 2, power_consumption);
 
@@ -267,10 +282,11 @@ void send_power_consumption(double power_n) {
 
     // publish
     client.publish(power_topic, power_consumption);
-    Serial.println("pppppppppppppppppppppppppppppppppppppppp");
+    Serial.println("--------------------------------------------------------------------");
 }
 
 void send_battery_remaining(double battery_n) {
+    Serial.println("-----------------------send_battery_remaining-----------------------");
     // Convert the battery remaining percentage value to a char array
     dtostrf(battery_n, 1, 2, battery_consumption);
 
@@ -281,7 +297,7 @@ void send_battery_remaining(double battery_n) {
 
     // publish
     client.publish(battery_topic, battery_consumption);
-    Serial.println("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
+    Serial.println("--------------------------------------------------------------------");
 }
 
 void receive_command_text() {

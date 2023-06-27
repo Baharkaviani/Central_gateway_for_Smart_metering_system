@@ -98,6 +98,7 @@ void setup() {
 void loop() {
     if (!client.connected()) {
         reconnectBroker();
+        client.subscribe(command_topic);
     }
     client.loop();
 
@@ -255,7 +256,8 @@ void send_gas_consumption() {
     }
     payload[i] = '\0';
 
-    // publish
+    // publish and subscribe
+    client.subscribe(gas_topic);
     bool is_sent = client.publish(gas_topic, payload);
     if (is_sent){
         unsent_gas_index = 0;
@@ -320,7 +322,8 @@ void send_water_consumption() {
     }
     payload[i] = '\0';
 
-    // publish
+    // publish and subscribe
+    client.subscribe(water_topic);
     bool is_sent = client.publish(water_topic, payload);
     if (is_sent){
         unsent_water_index = 0;
@@ -380,7 +383,8 @@ void send_power_consumption(double power_n) {
     }
     payload[i] = '\0';
 
-    // publish
+    // publish and subscribe
+    client.subscribe(power_topic);
     bool is_sent = client.publish(power_topic, payload);
     if (is_sent) {
         unsent_power_index = 0;
@@ -440,7 +444,8 @@ void send_battery_remaining(double battery_n) {
     }
     payload[i] = '\0';
 
-    // publish
+    // publish and subscribe
+    client.subscribe(battery_topic);
     bool is_sent = client.publish(battery_topic, payload);
     if (is_sent){
         unsent_battery_index = 0;

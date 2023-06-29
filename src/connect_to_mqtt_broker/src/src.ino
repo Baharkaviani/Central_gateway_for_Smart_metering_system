@@ -103,17 +103,9 @@ void loop() {
         client.subscribe(command_topic);
     }
     client.loop();
-
     delay(2000);
 
-    M5.Lcd.setTextColor(GREEN);
-    M5.Lcd.setCursor(0, 0);
     M5.Lcd.clearDisplay();
-    M5.Lcd.print(millis());
-    M5.Lcd.print(" - ");
-    M5.Lcd.println(M5.Power.isCharging());
-    M5.Lcd.print("Battery Level: ");
-    M5.Lcd.println(M5.Power.getBatteryLevel());
 
     elapsed_time_in_seconds = millis();
 
@@ -138,7 +130,7 @@ void loop() {
     // battery
     if (elapsed_time_in_seconds - last_battery_msg_time > updating_battery_data_period) {
         last_battery_msg_time = elapsed_time_in_seconds;
-        send_battery_remaining(elapsed_time_in_seconds);
+        send_battery_remaining();
     }
 }
 
@@ -155,13 +147,13 @@ void WiFiInit() {
     WiFi.onEvent(WiFiStationDisconnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
 
     WiFi.begin(ssid, password);
-    M5.Lcd.println("Connecting to WiFi...");
     Serial.println("Connecting to WiFi...");
 }
 
 void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info){
     Serial.println("-----------------------WiFiStationConnected-----------------------");
     Serial.println("Connected to AP successfully!");
+    M5.Lcd.println("Connected to AP successfully!");
 }
 
 void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info){
@@ -202,7 +194,6 @@ void reconnectBroker() {
         Serial.printf("The client %s connects to the public mqtt broker\n", client_id.c_str());
 
         if (client.connect(client_id.c_str(), mqtt_username, mqtt_password)) {
-        // if (client.connect(client_id.c_str())) {
             Serial.println("Public emqx mqtt broker connected");
         } else {
             Serial.print("failed with state ");
@@ -217,7 +208,6 @@ void reconnectBroker() {
 void send_gas_consumption() {
     Serial.println("-----------------------send_gas_consumption-----------------------");
     // read gas data from input pin
-    M5.Lcd.setCursor(0, 60);
     gas_pin_data = digitalRead(gas_pin_num);
     M5.Lcd.printf("The value of gas data is: %d ", gas_pin_data);
 
@@ -225,20 +215,6 @@ void send_gas_consumption() {
     Serial.printf("unsent_gas_index = %d", unsent_gas_index);
     Serial.println();
     dtostrf(gas_pin_data, 1, 2, gas_consumption[unsent_gas_index]);
-
-    // print all gas_consumption datas
-    // for (int i = 0; i < BUFFER_SIZE; i++) {
-    //     for (int j = 0; j < 50; j++) {
-    //         if (gas_consumption[i][j] == '\0') {
-    //             Serial.print(",");
-    //             break;
-    //         }
-    //         else {
-    //             Serial.print(gas_consumption[i][j]);
-    //         }
-    //     }
-    // }
-    // Serial.println();
 
     // create JSON object as a string
     String json_str = "{\"gas_consumption\": [";
@@ -283,7 +259,6 @@ void send_gas_consumption() {
 void send_water_consumption() {
     Serial.println("-----------------------send_water_consumption-----------------------");
     // read water data from input pin
-    M5.Lcd.setCursor(0, 90);
     water_pin_data = digitalRead(water_pin_num);
     M5.Lcd.printf("The value of water data is: %d ", water_pin_data);
 
@@ -291,20 +266,6 @@ void send_water_consumption() {
     Serial.printf("unsent_water_index = %d", unsent_water_index);
     Serial.println();
     dtostrf(water_pin_data, 1, 2, water_consumption[unsent_water_index]);
-
-    // print all water_consumption datas
-    // for (int i = 0; i < BUFFER_SIZE; i++) {
-    //     for (int j = 0; j < 50; j++) {
-    //         if (water_consumption[i][j] == '\0') {
-    //             Serial.print(",");
-    //             break;
-    //         }
-    //         else{
-    //             Serial.print(water_consumption[i][j]);
-    //         }
-    //     }
-    // }
-    // Serial.println();
 
     // create JSON object as a string
     String json_str = "{\"water_consumption\": [";
@@ -353,20 +314,6 @@ void send_power_consumption(double power_n) {
     Serial.println();
     dtostrf(power_n, 1, 2, power_consumption[unsent_power_index]);
 
-    // print all power_consumption datas
-    // for (int i = 0; i < BUFFER_SIZE; i++) {
-    //     for (int j = 0; j < 50; j++) {
-    //         if (power_consumption[i][j] == '\0') {
-    //             Serial.print(",");
-    //             break;
-    //         }
-    //         else {
-    //             Serial.print(power_consumption[i][j]);
-    //         }
-    //     }
-    // }
-    // Serial.println();
-
     // create JSON object as a string
     String json_str = "{\"power_consumption\": [";
     for (int i = 0; i <= unsent_power_index; i++) {
@@ -407,26 +354,20 @@ void send_power_consumption(double power_n) {
     }
 }
 
-void send_battery_remaining(double battery_n) {
+void send_battery_remaining() {
     Serial.println("-----------------------send_battery_remaining-----------------------");
+    // get battery level of the board
+    M5.Lcd.print("Battery is Charging: ");
+    M5.Lcd.println(M5.Power.isCharging());
+
+    uint32_t battery_level = M5.Power.getBatteryLevel();
+    M5.Lcd.print("Battery Level: ");
+    M5.Lcd.println(battery_level);
+
     // convert the battery consumption value to a char array
     Serial.printf("unsent_battery_index = %d", unsent_battery_index);
     Serial.println();
-    dtostrf(battery_n, 1, 2, battery_consumption[unsent_battery_index]);
-
-    // print all battery_consumption datas
-    // for (int i = 0; i < BUFFER_SIZE; i++) {
-    //     for (int j = 0; j < 50; j++) {
-    //         if (battery_consumption[i][j] == '\0') {
-    //             Serial.print(",");
-    //             break;
-    //         }
-    //         else {
-    //             Serial.print(battery_consumption[i][j]);
-    //         }
-    //     }
-    // }
-    // Serial.println();
+    dtostrf(battery_level, 1, 0, battery_consumption[unsent_battery_index]);
 
     // create JSON object as a string
     String json_str = "{\"battery_consumption\": [";

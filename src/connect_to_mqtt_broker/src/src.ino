@@ -73,6 +73,7 @@ void setup() {
     M5.Power.begin();
     M5.Lcd.setTextSize(2);
     M5.Lcd.println("Welcome :)");
+    
     pinMode (gas_pin_num, INPUT);
     pinMode (water_pin_num, INPUT);
 
@@ -103,9 +104,10 @@ void loop() {
         client.subscribe(command_topic);
     }
     client.loop();
-    delay(2000);
+    delay(5000);
 
     M5.Lcd.clearDisplay();
+    M5.Lcd.setCursor(0, 0);
 
     elapsed_time_in_seconds = millis();
 
@@ -150,20 +152,20 @@ void WiFiInit() {
     Serial.println("Connecting to WiFi...");
 }
 
-void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info){
+void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
     Serial.println("-----------------------WiFiStationConnected-----------------------");
     Serial.println("Connected to AP successfully!");
     M5.Lcd.println("Connected to AP successfully!");
 }
 
-void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info){
+void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
     Serial.println("-----------------------WiFiGotIP-----------------------");
     Serial.println("WiFi connected.");
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
 }
 
-void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info){
+void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
     Serial.println("-----------------------WiFiStationDisconnected-----------------------");
     Serial.println("Disconnected from WiFi access point.");
     Serial.print("WiFi lost connection. Reason: ");
@@ -210,6 +212,7 @@ void send_gas_consumption() {
     // read gas data from input pin
     gas_pin_data = digitalRead(gas_pin_num);
     M5.Lcd.printf("The value of gas data is: %d ", gas_pin_data);
+    M5.Lcd.println();
 
     // convert the gas consumption value to a char array
     Serial.printf("unsent_gas_index = %d", unsent_gas_index);
@@ -248,7 +251,7 @@ void send_gas_consumption() {
     // publish and subscribe
     client.subscribe(gas_topic);
     bool is_sent = client.publish(gas_topic, payload);
-    if (is_sent){
+    if (is_sent) {
         unsent_gas_index = 0;
     }
     else {
@@ -261,6 +264,7 @@ void send_water_consumption() {
     // read water data from input pin
     water_pin_data = digitalRead(water_pin_num);
     M5.Lcd.printf("The value of water data is: %d ", water_pin_data);
+    M5.Lcd.println();
 
     // convert the water consumption value to a char array
     Serial.printf("unsent_water_index = %d", unsent_water_index);
@@ -299,7 +303,7 @@ void send_water_consumption() {
     // publish and subscribe
     client.subscribe(water_topic);
     bool is_sent = client.publish(water_topic, payload);
-    if (is_sent){
+    if (is_sent) {
         unsent_water_index = 0;
     }
     else {
@@ -401,7 +405,7 @@ void send_battery_remaining() {
     // publish and subscribe
     client.subscribe(battery_topic);
     bool is_sent = client.publish(battery_topic, payload);
-    if (is_sent){
+    if (is_sent) {
         unsent_battery_index = 0;
     }
     else {

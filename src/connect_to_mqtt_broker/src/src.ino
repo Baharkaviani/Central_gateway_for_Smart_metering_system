@@ -35,9 +35,9 @@ const char *mqtt_username = "rw";
 const char *mqtt_password = "readwrite";
 
 // Input pins
-const int gas_pin_num = 21;
+const int gas_pin_num = 35;
 uint32_t gas_pin_data;
-const int water_pin_num = 22;
+const int water_pin_num = 36;
 uint32_t water_pin_data;
 
 // Required parameters to specify the data sending period
@@ -70,7 +70,9 @@ void setup() {
 
     // prepare board
     M5.begin();
-    M5.Lcd.println("Welcome dear :)");
+    M5.Power.begin();
+    M5.Lcd.setTextSize(2);
+    M5.Lcd.println("Welcome :)");
     pinMode (gas_pin_num, INPUT);
     pinMode (water_pin_num, INPUT);
 
@@ -101,6 +103,17 @@ void loop() {
         client.subscribe(command_topic);
     }
     client.loop();
+
+    delay(2000);
+
+    M5.Lcd.setTextColor(GREEN);
+    M5.Lcd.setCursor(0, 0);
+    M5.Lcd.clearDisplay();
+    M5.Lcd.print(millis());
+    M5.Lcd.print(" - ");
+    M5.Lcd.println(M5.Power.isCharging());
+    M5.Lcd.print("Battery Level: ");
+    M5.Lcd.println(M5.Power.getBatteryLevel());
 
     elapsed_time_in_seconds = millis();
 
@@ -204,7 +217,7 @@ void reconnectBroker() {
 void send_gas_consumption() {
     Serial.println("-----------------------send_gas_consumption-----------------------");
     // read gas data from input pin
-    M5.Lcd.setCursor(0, 0);
+    M5.Lcd.setCursor(0, 60);
     gas_pin_data = digitalRead(gas_pin_num);
     M5.Lcd.printf("The value of gas data is: %d ", gas_pin_data);
 
@@ -270,7 +283,7 @@ void send_gas_consumption() {
 void send_water_consumption() {
     Serial.println("-----------------------send_water_consumption-----------------------");
     // read water data from input pin
-    M5.Lcd.setCursor(0, 10);
+    M5.Lcd.setCursor(0, 90);
     water_pin_data = digitalRead(water_pin_num);
     M5.Lcd.printf("The value of water data is: %d ", water_pin_data);
 

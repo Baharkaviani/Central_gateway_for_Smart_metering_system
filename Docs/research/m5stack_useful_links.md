@@ -10,3 +10,5 @@ https://docs.m5stack.com/en/api/core/gpio
 stupid downloads
 https://docs.m5stack.com/en/download
 
+esp32
+http://esp32.net/

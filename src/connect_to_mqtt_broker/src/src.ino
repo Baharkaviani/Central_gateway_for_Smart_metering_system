@@ -22,47 +22,49 @@ PubSubClient client(espClient);
 // MQTT Broker
 const char *mqtt_broker = "test.mosquitto.org";
 const int mqtt_port = 1884;
-
-// MQTT Topics
-const char *gas_topic = "AUTSmartMeteringSystem/gas/ID1/consumption";
-const char *water_topic = "AUTSmartMeteringSystem/water/ID1/consumption"; //AUTSmartMeteringSystem/Node1/WaterFlow1
-const char *power_topic = "AUTSmartMeteringSystem/power/ID1/consumption";
-const char *battery_topic = "AUTSmartMeteringSystem/battery/ID1/remainingPercentage";
-const char *command_topic = "AUTSmartMeteringSystem/command/ID1/commandText";
-
-// MQTT Authentication
 const char *mqtt_username = "rw";
 const char *mqtt_password = "readwrite";
 
+struct TopicInfo {
+    const char *topic;
+    const char *payload;
+};
+
+TopicInfo topics[] = {
+    {"AUTSmartMeteringSystem/gas/ID1/consumption", "Gas consumption will be sent through this topic."},
+    {"AUTSmartMeteringSystem/water/ID1/consumption", "Water consumption will be sent through this topic."},
+    {"AUTSmartMeteringSystem/power/ID1/consumption", "Power consumption will be sent through this topic."},
+    {"AUTSmartMeteringSystem/battery/ID1/remainingPercentage", "Remaining battery percentage will be sent through this topic."},
+    {"AUTSmartMeteringSystem/command/ID1/commandText", "Orders will be received through this topic."}
+};
+
+enum DataType {
+    GAS,
+    WATER,
+    POWER,
+    BATTERY
+};
+
 // Input pins
 const int gas_pin_num = 35;
-uint32_t gas_pin_data;
 const int water_pin_num = 36;
-uint32_t water_pin_data;
 
 // Required parameters to specify the data sending period
 unsigned long last_gas_msg_time = 0;
 unsigned long last_water_msg_time = 0;
 unsigned long last_power_msg_time = 0;
 unsigned long last_battery_msg_time = 0;
-
-unsigned long elapsed_time_in_seconds = 0;
-
-unsigned long updating_gas_data_period = 20000; // = 20 second
-unsigned long updating_water_data_period = 20000; // = 20 second
-unsigned long updating_power_data_period = 20000; // = 20 second
-unsigned long updating_battery_data_period = 20000; // = 20 second
+const int updating_data_period = 20000;
 
 // Measured data to send
-#define BUFFER_SIZE 10
-char gas_consumption[BUFFER_SIZE][50];
-char water_consumption[BUFFER_SIZE][50];
-char power_consumption[BUFFER_SIZE][50];
-char battery_consumption[BUFFER_SIZE][50];
-int unsent_gas_index = 0;
-int unsent_water_index = 0;
-int unsent_power_index = 0;
-int unsent_battery_index = 0;
+#define DATA_TYPES 4
+#define BUFFER_SIZE 5
+#define DATA_SIZE 50
+char consumption_data[DATA_TYPES][BUFFER_SIZE][DATA_SIZE] = {{"0.0", "0.0", "0.0", "0.0"},
+                                                             {"0.0", "0.0", "0.0", "0.0"},
+                                                             {"0.0", "0.0", "0.0", "0.0"},
+                                                             {"0.0", "0.0", "0.0", "0.0"}};
+int unsent_index[DATA_TYPES] = {0};
 
 void setup() {
     // Set software serial baud to 115200;
@@ -86,58 +88,50 @@ void setup() {
     reconnectBroker();
 
     // publish and subscribe
-    client.subscribe(gas_topic);
-    client.publish(gas_topic, "Gas consumption will be sent through this topic.");
-    client.subscribe(water_topic);
-    client.publish(water_topic, "Water consumption will be sent through this topic.");
-    client.subscribe(power_topic);
-    client.publish(power_topic, "Power consumption will be sent through this topic.");
-    client.subscribe(battery_topic);
-    client.publish(battery_topic, "Remaining battery percentage will be sent through this topic.");
-    client.subscribe(command_topic);
-    client.publish(command_topic, "Orders will be received through this topic.");
+    for (TopicInfo topic : topics) {
+        client.subscribe(topic.topic);
+        client.publish(topic.topic, topic.payload);
+    }
 }
 
 void loop() {
     if (!client.connected()) {
         reconnectBroker();
-        client.subscribe(command_topic);
+        for (TopicInfo topic : topics) {
+            client.subscribe(topic.topic);
+        }
     }
     client.loop();
-    delay(5000);
 
-    M5.Lcd.clearDisplay();
-    M5.Lcd.setCursor(0, 0);
-
-    elapsed_time_in_seconds = millis();
+    unsigned long elapsed_time_in_seconds = millis();
 
     // gas
-    if (elapsed_time_in_seconds - last_gas_msg_time > updating_gas_data_period) {
+    if (elapsed_time_in_seconds - last_gas_msg_time > updating_data_period) {
         last_gas_msg_time = elapsed_time_in_seconds;
-        send_gas_consumption();
+        send_data(gas_pin_num, GAS);
     }
 
     // water
-    if (elapsed_time_in_seconds - last_water_msg_time > updating_water_data_period) {
+    if (elapsed_time_in_seconds - last_water_msg_time > updating_data_period) {
         last_water_msg_time = elapsed_time_in_seconds;
-        send_water_consumption();
+        send_data(water_pin_num, WATER);
     }
 
     // power
-    if (elapsed_time_in_seconds - last_power_msg_time > updating_power_data_period) {
+    if (elapsed_time_in_seconds - last_power_msg_time > updating_data_period) {
         last_power_msg_time = elapsed_time_in_seconds;
-        send_power_consumption(elapsed_time_in_seconds);
+        double power_n = 42.0; // Replace with your actual power value
+        send_data(power_n, POWER);
     }
 
     // battery
-    if (elapsed_time_in_seconds - last_battery_msg_time > updating_battery_data_period) {
+    if (elapsed_time_in_seconds - last_battery_msg_time > updating_data_period) {
         last_battery_msg_time = elapsed_time_in_seconds;
         send_battery_remaining();
     }
 }
 
 void WiFiInit() {
-    Serial.println("-----------------------WiFiInit-----------------------");
     // delete old config
     WiFi.disconnect(true);
 
@@ -153,20 +147,17 @@ void WiFiInit() {
 }
 
 void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
-    Serial.println("-----------------------WiFiStationConnected-----------------------");
     Serial.println("Connected to AP successfully!");
     M5.Lcd.println("Connected to AP successfully!");
 }
 
 void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
-    Serial.println("-----------------------WiFiGotIP-----------------------");
     Serial.println("WiFi connected.");
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
 }
 
 void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
-    Serial.println("-----------------------WiFiStationDisconnected-----------------------");
     Serial.println("Disconnected from WiFi access point.");
     Serial.print("WiFi lost connection. Reason: ");
     Serial.println(info.wifi_sta_disconnected.reason);
@@ -175,7 +166,6 @@ void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
 }
 
 void callback(char *topic, byte *payload, unsigned int length) {
-    Serial.println("-----------------------callback-----------------------");
     Serial.print("Message arrived in topic: ");
     Serial.println(topic);
     Serial.print("Message:");
@@ -186,7 +176,6 @@ void callback(char *topic, byte *payload, unsigned int length) {
 }
 
 void reconnectBroker() {
-    Serial.println("-----------------------reconnectBroker-----------------------");
     // Loop until we're reconnected to mqtt broker
     while (!client.connected()) {
         Serial.print("Attempting MQTT connection...\n");
@@ -207,160 +196,20 @@ void reconnectBroker() {
     }
 }
 
-void send_gas_consumption() {
-    Serial.println("-----------------------send_gas_consumption-----------------------");
-    // read gas data from input pin
-    gas_pin_data = digitalRead(gas_pin_num);
-    M5.Lcd.printf("The value of gas data is: %d ", gas_pin_data);
-    M5.Lcd.println();
-
-    // convert the gas consumption value to a char array
-    Serial.printf("unsent_gas_index = %d", unsent_gas_index);
-    Serial.println();
-    dtostrf(gas_pin_data, 1, 2, gas_consumption[unsent_gas_index]);
-
-    // create JSON object as a string
-    String json_str = "{\"gas_consumption\": [";
-    for (int i = 0; i <= unsent_gas_index; i++) {
-        for (int j = 0; j < 50; j++) {
-            if (gas_consumption[i][j] != '\0') {
-                json_str += gas_consumption[i][j];
-            }
-            else {
-                break;
-            }
-        }
-        if (i != unsent_gas_index) {
-            json_str += ",";
-        }
-    }
-    json_str += "]}";
-
-    Serial.println(json_str);
-    Serial.print("time:");
-    Serial.println(millis());
-
-    // create char *payload
-    char payload[json_str.length()];
-    int i;
-    for (i = 0; i < json_str.length(); i++) {
-        payload[i] = json_str[i];
-    }
-    payload[i] = '\0';
-
-    // publish and subscribe
-    client.subscribe(gas_topic);
-    bool is_sent = client.publish(gas_topic, payload);
-    if (is_sent) {
-        unsent_gas_index = 0;
-    }
-    else {
-        unsent_gas_index++;
-    }
+void send_data(int pin, DataType type) {
+    uint32_t pin_data = digitalRead(pin);
+    dtostrf(pin_data, 1, 2, consumption_data[type][unsent_index[type]]);
+    send_topic_data(type);
 }
 
-void send_water_consumption() {
-    Serial.println("-----------------------send_water_consumption-----------------------");
-    // read water data from input pin
-    water_pin_data = digitalRead(water_pin_num);
-    M5.Lcd.printf("The value of water data is: %d ", water_pin_data);
-    M5.Lcd.println();
-
-    // convert the water consumption value to a char array
-    Serial.printf("unsent_water_index = %d", unsent_water_index);
-    Serial.println();
-    dtostrf(water_pin_data, 1, 2, water_consumption[unsent_water_index]);
-
-    // create JSON object as a string
-    String json_str = "{\"water_consumption\": [";
-    for (int i = 0; i <= unsent_water_index; i++) {
-        for (int j = 0; j < 50; j++) {
-            if (water_consumption[i][j] != '\0') {
-                json_str += water_consumption[i][j];
-            }
-            else {
-                break;
-            }
-        }
-        if (i != unsent_water_index) {
-            json_str += ",";
-        }
-    }
-    json_str += "]}";
-
-    Serial.println(json_str);
-    Serial.print("time:");
-    Serial.println(millis());
-    
-    // create char *payload
-    char payload[json_str.length()];
-    int i;
-    for (i = 0; i < json_str.length(); i++) {
-        payload[i] = json_str[i];
-    }
-    payload[i] = '\0';
-
-    // publish and subscribe
-    client.subscribe(water_topic);
-    bool is_sent = client.publish(water_topic, payload);
-    if (is_sent) {
-        unsent_water_index = 0;
-    }
-    else {
-        unsent_water_index++;
-    }
-}
-
-void send_power_consumption(double power_n) {
-    Serial.println("-----------------------send_power_consumption-----------------------");
-    // convert the power consumption value to a char array
-    Serial.printf("unsent_power_index = %d", unsent_power_index);
-    Serial.println();
-    dtostrf(power_n, 1, 2, power_consumption[unsent_power_index]);
-
-    // create JSON object as a string
-    String json_str = "{\"power_consumption\": [";
-    for (int i = 0; i <= unsent_power_index; i++) {
-        for (int j = 0; j < 50; j++) {
-            if (power_consumption[i][j] != '\0') {
-                json_str += power_consumption[i][j];
-            }
-            else {
-                break;
-            }
-        }
-        if (i != unsent_power_index) {
-            json_str += ",";
-        }
-    }
-    json_str += "]}";
-    
-    Serial.println(json_str);
-    Serial.print("time:");
-    Serial.println(millis());
-
-    // create char *payload
-    char payload[json_str.length()];
-    int i;
-    for (i = 0; i < json_str.length(); i++) {
-        payload[i] = json_str[i];
-    }
-    payload[i] = '\0';
-
-    // publish and subscribe
-    client.subscribe(power_topic);
-    bool is_sent = client.publish(power_topic, payload);
-    if (is_sent) {
-        unsent_power_index = 0;
-    }
-    else {
-        unsent_power_index++;
-    }
+void send_data(double value, DataType type) {
+    dtostrf(value, 1, 2, consumption_data[type][unsent_index[type]]);
+    send_topic_data(type);
 }
 
 void send_battery_remaining() {
-    Serial.println("-----------------------send_battery_remaining-----------------------");
-    // get battery level of the board
+    M5.Lcd.clearDisplay();
+    M5.Lcd.setCursor(0, 0);
     M5.Lcd.print("Battery is Charging: ");
     M5.Lcd.println(M5.Power.isCharging());
 
@@ -368,51 +217,58 @@ void send_battery_remaining() {
     M5.Lcd.print("Battery Level: ");
     M5.Lcd.println(battery_level);
 
-    // convert the battery consumption value to a char array
-    Serial.printf("unsent_battery_index = %d", unsent_battery_index);
-    Serial.println();
-    dtostrf(battery_level, 1, 0, battery_consumption[unsent_battery_index]);
+    dtostrf(battery_level, 1, 0, consumption_data[BATTERY][unsent_index[BATTERY]]);
+    send_topic_data(BATTERY);
+}
 
-    // create JSON object as a string
-    String json_str = "{\"battery_consumption\": [";
-    for (int i = 0; i <= unsent_battery_index; i++) {
-        for (int j = 0; j < 50; j++) {
-            if (battery_consumption[i][j] != '\0') {
-                json_str += battery_consumption[i][j];
-            }
-            else {
-                break;
-            }
-        }
-        if (i != unsent_battery_index) {
+void send_topic_data(DataType type) {
+    String json_str = "{\"";
+    json_str += get_topic_name(type);
+    json_str += "\": [";
+
+    for (int i = 0; i < BUFFER_SIZE; i++) {
+        json_str += consumption_data[type][i];
+        if (i < BUFFER_SIZE - 2) {
             json_str += ",";
         }
+        else if (i == BUFFER_SIZE - 1) {
+            json_str = json_str + "], \"unsent_index\": " + unsent_index[type];
+        }
     }
-    json_str += "]}";
+
+    json_str += "}";
 
     Serial.println(json_str);
     Serial.print("time:");
     Serial.println(millis());
 
-    // create char *payload
-    char payload[json_str.length()];
-    int i;
-    for (i = 0; i < json_str.length(); i++) {
-        payload[i] = json_str[i];
-    }
-    payload[i] = '\0';
+    char payload[json_str.length() + 1];
+    snprintf(payload, sizeof(payload), "%s", json_str.c_str());
 
-    // publish and subscribe
-    client.subscribe(battery_topic);
-    bool is_sent = client.publish(battery_topic, payload);
-    if (is_sent) {
-        unsent_battery_index = 0;
-    }
-    else {
-        unsent_battery_index++;
+    client.publish(topics[type].topic, payload);
+
+    if (unsent_index[type] < BUFFER_SIZE - 1) {
+        unsent_index[type]++;
+    } else {
+        unsent_index[type] = 0;
     }
 }
 
-void receive_command_text() {
-    // TODO
+const char* get_topic_name(DataType type) {
+    switch (type) {
+        case GAS:
+            // return topics[GAS].topic;
+            return "GAS";
+        case WATER:
+            // return topics[WATER].topic;
+            return "WATER";
+        case POWER:
+            // return topics[POWER].topic;
+            return "POWER";
+        case BATTERY:
+            // return topics[BATTERY].topic;
+            return "BATTERY";
+        default:
+            return ""; // Return an empty string for unknown data types
+    }
 }

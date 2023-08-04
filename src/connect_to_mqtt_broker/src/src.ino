@@ -58,7 +58,7 @@ const int updating_data_period = 20000;
 
 // Measured data to send
 #define DATA_TYPES 4
-#define BUFFER_SIZE 5
+#define BUFFER_SIZE 4
 #define DATA_SIZE 50
 char consumption_data[DATA_TYPES][BUFFER_SIZE][DATA_SIZE] = {{"0.0", "0.0", "0.0", "0.0"},
                                                              {"0.0", "0.0", "0.0", "0.0"},
@@ -228,15 +228,11 @@ void send_topic_data(DataType type) {
 
     for (int i = 0; i < BUFFER_SIZE; i++) {
         json_str += consumption_data[type][i];
-        if (i < BUFFER_SIZE - 2) {
+        if (i < BUFFER_SIZE - 1) {
             json_str += ",";
         }
-        else if (i == BUFFER_SIZE - 1) {
-            json_str = json_str + "], \"unsent_index\": " + unsent_index[type];
-        }
     }
-
-    json_str += "}";
+    json_str = json_str + "], \"unsent_index\": " + unsent_index[type] + "}";
 
     Serial.println(json_str);
     Serial.print("time:");

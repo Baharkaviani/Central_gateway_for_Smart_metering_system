@@ -173,6 +173,11 @@ void callback(char *topic, byte *payload, unsigned int length) {
         Serial.print((char)payload[i]);
     }
     Serial.println();
+
+    // read the command text from "AUTSmartMeteringSystem/command/ID1/commandText" topic
+    if (!strcmp(topic, "AUTSmartMeteringSystem/command/ID1/commandText")) {
+        receive_command(payload, length);
+    }
 }
 
 void reconnectBroker() {
@@ -248,6 +253,10 @@ void send_topic_data(DataType type) {
     } else {
         unsent_index[type] = 0;
     }
+}
+
+void receive_command(byte *payload, unsigned int length) {
+    Serial.println("Start to execute command.");
 }
 
 const char* get_topic_name(DataType type) {

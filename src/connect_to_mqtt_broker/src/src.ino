@@ -4,6 +4,7 @@
 * Describe:
     This sketch demonstrates how to connect to a mqtt broker.
     Before connecting to broker you have to test wifi connection.
+    TODO: complete documentation...
 * Date: 2023/02/14
 *******************************************************************************
 */
@@ -25,17 +26,23 @@ const int mqtt_port = 1884;
 const char *mqtt_username = "rw";
 const char *mqtt_password = "readwrite";
 
+// Board's unique ID
+String m5stack_id = "";
+
+// declare a buffer to store the formatted topic
+char buffer[128];
+
 struct TopicInfo {
     const char *topic;
     const char *payload;
 };
 
 TopicInfo topics[] = {
-    {"AUTSmartMeteringSystem/gas/ID1/consumption", "Gas consumption will be sent through this topic."},
-    {"AUTSmartMeteringSystem/water/ID1/consumption", "Water consumption will be sent through this topic."},
-    {"AUTSmartMeteringSystem/power/ID1/consumption", "Power consumption will be sent through this topic."},
-    {"AUTSmartMeteringSystem/battery/ID1/remainingPercentage", "Remaining battery percentage will be sent through this topic."},
-    {"AUTSmartMeteringSystem/command/ID1/commandText", "Orders will be received through this topic."}
+    {"AUTSmartMeteringSystem/gas/%s/consumption", "Gas consumption will be sent through this topic."},
+    {"AUTSmartMeteringSystem/water/%s/consumption", "Water consumption will be sent through this topic."},
+    {"AUTSmartMeteringSystem/power/%s/consumption", "Power consumption will be sent through this topic."},
+    {"AUTSmartMeteringSystem/battery/%s/remainingPercentage", "Remaining battery percentage will be sent through this topic."},
+    {"AUTSmartMeteringSystem/command/%s/commandText", "Orders will be received through this topic."}
 };
 
 enum DataType {
@@ -81,6 +88,7 @@ void setup() {
 
     // connecting to a WiFi network
     WiFiInit();
+    m5stack_id = String(WiFi.macAddress());
 
     // connecting to a mqtt broker
     client.setServer(mqtt_broker, mqtt_port);
@@ -89,8 +97,11 @@ void setup() {
 
     // publish and subscribe
     for (TopicInfo topic : topics) {
-        client.subscribe(topic.topic);
-        client.publish(topic.topic, topic.payload);
+        // format the topic with the id and store it in the buffer
+        sprintf(buffer, topic.topic, m5stack_id.c_str());
+        // subscribe and publish using the buffer
+        client.subscribe(buffer);
+        client.publish(buffer, topic.payload);
     }
 }
 
@@ -98,7 +109,11 @@ void loop() {
     if (!client.connected()) {
         reconnectBroker();
         for (TopicInfo topic : topics) {
-            client.subscribe(topic.topic);
+            // format the topic with the id and store it in the buffer
+            sprintf(buffer, topic.topic, m5stack_id.c_str());
+            // subscribe and publish using the buffer
+            client.subscribe(buffer);
+            client.publish(buffer, topic.payload);
         }
     }
     client.loop();
@@ -257,6 +272,7 @@ void send_topic_data(DataType type) {
 
 void receive_command(byte *payload, unsigned int length) {
     Serial.println("Start to execute command.");
+    // TODO: send data to esp8266 board with RS485
 }
 
 const char* get_topic_name(DataType type) {

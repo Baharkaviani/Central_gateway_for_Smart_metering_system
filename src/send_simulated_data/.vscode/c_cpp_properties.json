@@ -10,7 +10,8 @@
             "includePath": [
                 "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/send_simulated_data/include",
                 "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/send_simulated_data/src",
-                "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFi/src",
+                "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/SoftwareSerial/src",
+                "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/send_simulated_data/.pio/libdeps/esp01_1m/modbus-esp8266/src",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/tools/sdk/include",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/cores/esp8266",
                 "C:/Users/bhrka/.platformio/packages/toolchain-xtensa/include",
@@ -27,6 +28,7 @@
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266SSDP",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266SdFat/src",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WebServer/src",
+                "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFi/src",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFiMesh/src",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266httpUpdate/src",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266mDNS/src",
@@ -42,7 +44,6 @@
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/SPI",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/SPISlave/src",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/Servo/src",
-                "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/SoftwareSerial/src",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/TFT_Touch_Shield_V2",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/Ticker/src",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/Wire",
@@ -59,7 +60,8 @@
                 "path": [
                     "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/send_simulated_data/include",
                     "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/send_simulated_data/src",
-                    "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFi/src",
+                    "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/SoftwareSerial/src",
+                    "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/send_simulated_data/.pio/libdeps/esp01_1m/modbus-esp8266/src",
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/tools/sdk/include",
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/cores/esp8266",
                     "C:/Users/bhrka/.platformio/packages/toolchain-xtensa/include",
@@ -76,6 +78,7 @@
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266SSDP",
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266SdFat/src",
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WebServer/src",
+                    "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFi/src",
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266WiFiMesh/src",
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266httpUpdate/src",
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/ESP8266mDNS/src",
@@ -91,7 +94,6 @@
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/SPI",
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/SPISlave/src",
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/Servo/src",
-                    "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/SoftwareSerial/src",
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/TFT_Touch_Shield_V2",
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/Ticker/src",
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif8266/libraries/Wire",
@@ -105,7 +107,7 @@
                 ]
             },
             "defines": [
-                "PLATFORMIO=60107",
+                "PLATFORMIO=60111",
                 "ESP8266",
                 "ARDUINO_ARCH_ESP8266",
                 "ARDUINO_ESP8266_ESP01",
@@ -127,8 +129,8 @@
                 "MMU_ICACHE_SIZE=0x8000",
                 ""
             ],
-            "cStandard": "c17",
-            "cppStandard": "c++17",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++17",
             "compilerPath": "C:/Users/bhrka/.platformio/packages/toolchain-xtensa/bin/xtensa-lx106-elf-gcc.exe",
             "compilerArgs": [
                 "-mlongcalls",

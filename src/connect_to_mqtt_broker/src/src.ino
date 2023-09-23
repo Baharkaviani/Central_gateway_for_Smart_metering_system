@@ -141,10 +141,8 @@ void loop() {
     }
     client.loop();
 
-    mb.task();
-    yield();
     count++;
-    if(count == 1000){
+    if(count == 3000){
         Serial.println(mb.Hreg(1));
         count = 0;
     }
@@ -166,8 +164,7 @@ void loop() {
     // power
     if (elapsed_time_in_seconds - last_power_msg_time > updating_data_period) {
         last_power_msg_time = elapsed_time_in_seconds;
-        double power_n = 42.0; // Replace with your actual power value
-        send_data(power_n, POWER);
+        send_data(MBUS_RXD_PIN, POWER);
     }
 
     // battery
@@ -175,6 +172,9 @@ void loop() {
         last_battery_msg_time = elapsed_time_in_seconds;
         send_battery_remaining();
     }
+
+    mb.task();
+    yield();
 }
 
 void WiFiInit() {
@@ -249,12 +249,21 @@ void reconnectBroker() {
 
 void send_data(int pin, DataType type) {
     uint32_t pin_data = digitalRead(pin);
-    dtostrf(pin_data, 1, 2, consumption_data[type][unsent_index[type]]);
-    send_topic_data(type);
-}
-
-void send_data(double value, DataType type) {
-    dtostrf(value, 1, 2, consumption_data[type][unsent_index[type]]);
+    switch (type) {
+        // case GAS:
+        //     return "GAS";
+        // case WATER:
+        //     return "WATER";
+        case POWER:
+            Serial.println("POWER");
+            dtostrf(mb.Hreg(1), 1, 2, consumption_data[type][unsent_index[type]]);
+            Serial.println(mb.Hreg(1));
+            break;
+        // case BATTERY:
+        //     return "BATTERY";
+        default:
+            dtostrf(pin_data, 1, 2, consumption_data[type][unsent_index[type]]);
+    }
     send_topic_data(type);
 }
 

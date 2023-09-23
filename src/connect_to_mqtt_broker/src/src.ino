@@ -301,7 +301,9 @@ void send_topic_data(DataType type) {
     char payload[json_str.length() + 1];
     snprintf(payload, sizeof(payload), "%s", json_str.c_str());
 
-    client.publish(topics[type].topic, payload);
+    sprintf(buffer, topics[type].topic, m5stack_id.c_str());
+    client.subscribe(buffer);
+    client.publish(buffer, payload);
 
     if (unsent_index[type] < BUFFER_SIZE - 1) {
         unsent_index[type]++;

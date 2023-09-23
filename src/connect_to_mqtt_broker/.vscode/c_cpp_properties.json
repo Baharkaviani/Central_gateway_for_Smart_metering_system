@@ -11,6 +11,7 @@
                 "C:\\Users\\bhrka\\Documents\\Arduino\\libraries\\PubSubClient\\src",
                 "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/connect_to_mqtt_broker/include",
                 "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/connect_to_mqtt_broker/src",
+                "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/connect_to_mqtt_broker/.pio/libdeps/m5stack-core-esp32/modbus-esp8266/src",
                 "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/connect_to_mqtt_broker/.pio/libdeps/m5stack-core-esp32/M5Stack/src",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif32/libraries/SPIFFS/src",
                 "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src",
@@ -244,6 +245,7 @@
                 "path": [
                     "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/connect_to_mqtt_broker/include",
                     "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/connect_to_mqtt_broker/src",
+                    "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/connect_to_mqtt_broker/.pio/libdeps/m5stack-core-esp32/modbus-esp8266/src",
                     "d:/Bahar/Book_amirkabir/BaharFinalProject/Central_gateway_for_Smart_metering_system/src/connect_to_mqtt_broker/.pio/libdeps/m5stack-core-esp32/M5Stack/src",
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif32/libraries/SPIFFS/src",
                     "C:/Users/bhrka/.platformio/packages/framework-arduinoespressif32/libraries/Wire/src",

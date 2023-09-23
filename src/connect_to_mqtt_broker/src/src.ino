@@ -13,6 +13,8 @@
 #include <PubSubClient.h>
 #include <string.h>
 #include <M5Stack.h>
+#include <ModbusRTU.h>
+#include <HardwareSerial.h>
 
 // WiFi (Replace with your network credentials)
 const char *ssid = "Warning";  // Enter your WiFi name
@@ -73,9 +75,23 @@ char consumption_data[DATA_TYPES][BUFFER_SIZE][DATA_SIZE] = {{"0.0", "0.0", "0.0
                                                              {"0.0", "0.0", "0.0", "0.0"}};
 int unsent_index[DATA_TYPES] = {0};
 
+// ModBus parameters to connect to the ESP8266 board
+#define MBUS_HW_SERIAL Serial2
+#define MBUS_TXD_PIN  17 // connected to the DI pin of RS485 transceiver
+#define MBUS_RXD_PIN  16 // connected to the RO pin of RS485 transceiver
+#define DE_RE 2
+
+#define REGN 5
+#define SLAVE_ID 1
+
+ModbusRTU mb;
+
 void setup() {
     // Set software serial baud to 115200;
     Serial.begin(115200);
+
+    // Set hardware serial baud to 9600;
+    MBUS_HW_SERIAL.begin(9600, SERIAL_8N1, MBUS_RXD_PIN, MBUS_TXD_PIN);
 
     // prepare board
     M5.begin();
@@ -85,6 +101,12 @@ void setup() {
     
     pinMode (gas_pin_num, INPUT);
     pinMode (water_pin_num, INPUT);
+
+    // prepare modbus connection
+    mb.begin(&MBUS_HW_SERIAL, DE_RE);
+    mb.slave(SLAVE_ID);
+    mb.addHreg(0,0,10);
+    mb.Hreg(REGN, 100);
 
     // connecting to a WiFi network
     WiFiInit();
@@ -105,6 +127,7 @@ void setup() {
     }
 }
 
+int count=0;
 void loop() {
     if (!client.connected()) {
         reconnectBroker();
@@ -117,6 +140,14 @@ void loop() {
         }
     }
     client.loop();
+
+    mb.task();
+    yield();
+    count++;
+    if(count == 1000){
+        Serial.println(mb.Hreg(1));
+        count = 0;
+    }
 
     unsigned long elapsed_time_in_seconds = millis();
 

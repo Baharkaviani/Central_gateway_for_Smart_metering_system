@@ -81,7 +81,10 @@ int unsent_index[DATA_TYPES] = {0};
 #define MBUS_RXD_PIN  16 // connected to the RO pin of RS485 transceiver
 #define DE_RE 2
 
-#define REGN 5
+#define INITIAL_REG_NUM 5
+#define GAS_REG_NUM 0
+#define WATER_REG_NUM 1
+#define POWER_REG_NUM 2
 #define SLAVE_ID 1
 
 ModbusRTU mb;
@@ -106,7 +109,7 @@ void setup() {
     mb.begin(&MBUS_HW_SERIAL, DE_RE);
     mb.slave(SLAVE_ID);
     mb.addHreg(0,0,10);
-    mb.Hreg(REGN, 100);
+    mb.Hreg(INITIAL_REG_NUM, 100);
 
     // connecting to a WiFi network
     WiFiInit();
@@ -142,8 +145,19 @@ void loop() {
     client.loop();
 
     count++;
-    if(count == 3000){
+    if(count == 10000){
+        Serial.println("mb.Hreg(0)");
+        Serial.println(mb.Hreg(0));
+        Serial.println("mb.Hreg(1)");
         Serial.println(mb.Hreg(1));
+        Serial.println("mb.Hreg(2)");
+        Serial.println(mb.Hreg(2));
+        Serial.println("mb.Hreg(3)");
+        Serial.println(mb.Hreg(3));
+        Serial.println("mb.Hreg(4)");
+        Serial.println(mb.Hreg(4));
+        Serial.println("mb.Hreg(5)");
+        Serial.println(mb.Hreg(5));
         count = 0;
     }
 
@@ -152,19 +166,19 @@ void loop() {
     // gas
     if (elapsed_time_in_seconds - last_gas_msg_time > updating_data_period) {
         last_gas_msg_time = elapsed_time_in_seconds;
-        send_data(gas_pin_num, GAS);
+        receive_and_send_data(GAS);
     }
 
     // water
     if (elapsed_time_in_seconds - last_water_msg_time > updating_data_period) {
         last_water_msg_time = elapsed_time_in_seconds;
-        send_data(water_pin_num, WATER);
+        receive_and_send_data(WATER);
     }
 
     // power
     if (elapsed_time_in_seconds - last_power_msg_time > updating_data_period) {
         last_power_msg_time = elapsed_time_in_seconds;
-        send_data(MBUS_RXD_PIN, POWER);
+        receive_and_send_data(POWER);
     }
 
     // battery
@@ -247,22 +261,25 @@ void reconnectBroker() {
     }
 }
 
-void send_data(int pin, DataType type) {
-    uint32_t pin_data = digitalRead(pin);
+void receive_and_send_data(DataType type) {
     switch (type) {
-        // case GAS:
-        //     return "GAS";
-        // case WATER:
-        //     return "WATER";
+        case GAS:
+            Serial.println("GAS");
+            dtostrf(mb.Hreg(GAS_REG_NUM), 1, 2, consumption_data[type][unsent_index[type]]);
+            Serial.println(mb.Hreg(GAS_REG_NUM));
+            break;
+        case WATER:
+            Serial.println("WATER");
+            dtostrf(mb.Hreg(WATER_REG_NUM), 1, 2, consumption_data[type][unsent_index[type]]);
+            Serial.println(mb.Hreg(WATER_REG_NUM));
+            break;
         case POWER:
             Serial.println("POWER");
-            dtostrf(mb.Hreg(1), 1, 2, consumption_data[type][unsent_index[type]]);
-            Serial.println(mb.Hreg(1));
+            dtostrf(mb.Hreg(POWER_REG_NUM), 1, 2, consumption_data[type][unsent_index[type]]);
+            Serial.println(mb.Hreg(POWER_REG_NUM));
             break;
-        // case BATTERY:
-        //     return "BATTERY";
         default:
-            dtostrf(pin_data, 1, 2, consumption_data[type][unsent_index[type]]);
+            dtostrf(mb.Hreg(INITIAL_REG_NUM), 1, 2, consumption_data[type][unsent_index[type]]);
     }
     send_topic_data(type);
 }

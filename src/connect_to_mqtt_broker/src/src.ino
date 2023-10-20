@@ -1,11 +1,15 @@
 /*
 *******************************************************************************
+* Project Title: Implementation of a central communication gateway for a smart metering system in buildings
 * Writer: Bahar Kaviani
+* Contact Information: bhr.kaviani@gmail.com
 * Describe:
-    This sketch demonstrates how to connect to a mqtt broker.
-    Before connecting to broker you have to test wifi connection.
-    TODO: complete documentation...
-* Date: 2023/02/14
+    This sketch demonstrates how to connect to an MQTT broker and interact with Modbus devices over RS485.
+    It establishes a connection to a specified Wi-Fi network, connects to a MQTT broker, and reads data from
+    Modbus devices. The received data is then published to MQTT topics with corresponding identifiers.
+    Please make sure to configure the Wi-Fi credentials, MQTT broker details, and Modbus parameters
+    before uploading this sketch to the M5Stack board.
+* Date: 10/20/2023
 *******************************************************************************
 */
 
@@ -145,19 +149,13 @@ void loop() {
     client.loop();
 
     count++;
-    if(count == 10000){
+    if(count == 20000){
         Serial.println("mb.Hreg(0)");
         Serial.println(mb.Hreg(0));
         Serial.println("mb.Hreg(1)");
         Serial.println(mb.Hreg(1));
         Serial.println("mb.Hreg(2)");
         Serial.println(mb.Hreg(2));
-        Serial.println("mb.Hreg(3)");
-        Serial.println(mb.Hreg(3));
-        Serial.println("mb.Hreg(4)");
-        Serial.println(mb.Hreg(4));
-        Serial.println("mb.Hreg(5)");
-        Serial.println(mb.Hreg(5));
         count = 0;
     }
 
